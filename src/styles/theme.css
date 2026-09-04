@@ -1,0 +1,57 @@
+:root {
+  /* Cores principais */
+  --color-primary: #0b4f7a;
+  --color-primary-dark: #073b5c;
+  --color-accent: #11b8bc;
+  --color-accent-light: #58d2d3;
+
+  /* Estados */
+  --color-success: #22a95d;
+  --color-warning: #f4a62a;
+  --color-danger: #d9534f;
+
+  /* Superfícies */
+  --color-background: #f5f8f8;
+  --color-background-secondary: #edf4f4;
+  --color-surface: #ffffff;
+
+  /* Texto */
+  --color-text-primary: #183845;
+  --color-text-secondary: #64777e;
+
+  /* Bordas */
+  --color-border: #d9e5e6;
+
+  /* Tipografia */
+  --font-family-base:
+    Inter,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /* Raios */
+  --radius-small: 8px;
+  --radius-medium: 12px;
+  --radius-large: 18px;
+
+  /* Espaçamentos */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-2xl: 48px;
+
+  /* Sombra */
+  --shadow-card: 0 8px 24px rgba(7, 59, 92, 0.08);
+
+  /* Layout */
+  --content-max-width: 1200px;
+}

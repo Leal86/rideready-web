@@ -220,7 +220,7 @@
   margin-top: var(--space-xl);
 }
 
-.activity-list > h2 {
+.activity-list>h2 {
   margin: 0 0 var(--space-lg);
   color: var(--color-text-primary);
   font-size: 1.5rem;
@@ -262,7 +262,7 @@
   letter-spacing: 0.05em;
 }
 
-.activity-card > div:last-child {
+.activity-card>div:last-child {
   display: flex;
   gap: var(--space-sm);
   margin-top: auto;
@@ -281,6 +281,76 @@
 
 .activity-card button:hover {
   border-color: var(--color-primary);
+}
+
+.location-autocomplete {
+  position: relative;
+}
+
+.location-autocomplete__status,
+.location-autocomplete__error {
+  margin: 2px 0 0;
+  font-size: 0.8125rem;
+}
+
+.location-autocomplete__status {
+  color: var(--color-text-secondary);
+}
+
+.location-autocomplete__error {
+  color: var(--color-danger);
+}
+
+.location-autocomplete__suggestions {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  z-index: 20;
+  overflow: hidden;
+  max-height: 280px;
+  overflow-y: auto;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-small);
+  box-shadow: var(--shadow-card);
+}
+
+.location-autocomplete__option {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+  gap: var(--space-xs);
+  padding: 12px 14px;
+  border: 0;
+  border-bottom: 1px solid var(--color-border);
+  background-color: var(--color-surface);
+  text-align: left;
+  cursor: pointer;
+}
+
+.location-autocomplete__option:last-child {
+  border-bottom: 0;
+}
+
+.location-autocomplete__option:hover,
+.location-autocomplete__option:focus {
+  background-color: var(--color-background-secondary);
+  outline: none;
+}
+
+.location-autocomplete__option strong {
+  color: var(--color-text-primary);
+  font-size: 0.875rem;
+  font-weight: var(--font-weight-semibold);
+}
+
+.location-autocomplete__option span {
+  color: var(--color-text-secondary);
+  font-size: 0.75rem;
+  font-weight: var(--font-weight-regular);
+  letter-spacing: normal;
 }
 
 @media (max-width: 720px) {

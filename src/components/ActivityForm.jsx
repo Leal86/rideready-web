@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import LocationAutocomplete from './LocationAutocomplete'
 
 const initialForm = {
   title: '',
@@ -114,14 +115,10 @@ function ActivityForm({
 
         <div className="form-field">
           <label htmlFor="location_name">Local</label>
-          <input
-            id="location_name"
-            name="location_name"
-            type="text"
+
+          <LocationAutocomplete
             value={formData.location_name}
             onChange={handleChange}
-            placeholder="Ex.: Lisboa"
-            required
           />
         </div>
 

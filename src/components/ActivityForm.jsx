@@ -21,6 +21,8 @@ function ActivityForm({
     formDataToEdit ?? initialForm,
   )
 
+  const [formError, setFormError] = useState('')
+
   function handleChange(event) {
     const { name, value } = event.target
 
@@ -32,6 +34,21 @@ function ActivityForm({
 
   async function handleSubmit(event) {
     event.preventDefault()
+
+    setFormError('')
+
+    if (!editingActivity) {
+      const scheduledDateTime = new Date(
+        `${formData.scheduled_date}T${formData.scheduled_time}`,
+      )
+
+      if (scheduledDateTime < new Date()) {
+        setFormError(
+          'A data e a hora da atividade não podem estar no passado.',
+        )
+        return
+      }
+    }
 
     const payload = {
       ...formData,
@@ -116,6 +133,11 @@ function ActivityForm({
             type="date"
             value={formData.scheduled_date}
             onChange={handleChange}
+            min={
+              editingActivity
+                ? undefined
+                : new Date().toISOString().split('T')[0]
+            }
             required
           />
         </div>
@@ -143,6 +165,12 @@ function ActivityForm({
             placeholder="Informações adicionais"
           />
         </div>
+
+        {formError && (
+          <div className="form-field form-field--full">
+            <p className="form-error">{formError}</p>
+          </div>
+        )}
 
         <div className="form-actions form-field--full">
           {editingActivity && (

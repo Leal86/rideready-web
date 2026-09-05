@@ -1,7 +1,14 @@
 import ActivityCard from './ActivityCard'
 import EmptyState from './EmptyState'
 
-function ActivityList({ activities, onEdit, onDelete }) {
+function ActivityList({
+  activities,
+  onEdit,
+  onDelete,
+  isPastPlannedActivity,
+  onComplete,
+  onCancelPast,
+}) {
   if (activities.length === 0) {
     return <EmptyState />
   }
@@ -17,6 +24,9 @@ function ActivityList({ activities, onEdit, onDelete }) {
             activity={activity}
             onEdit={onEdit}
             onDelete={onDelete}
+            isPastPlannedActivity={isPastPlannedActivity}
+            onComplete={onComplete}
+            onCancelPast={onCancelPast}
           />
         ))}
       </div>

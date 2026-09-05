@@ -41,7 +41,9 @@ function ActivitiesPage() {
       setActivities((current) => [...current, response.data])
 
       return true
-    } catch (requestError) {
+    }
+
+    catch (requestError) {
       if (
         requestError.response?.status === 409 &&
         requestError.response?.data?.detail
@@ -74,6 +76,31 @@ function ActivitiesPage() {
 
           return false
         }
+      }
+
+      const detail = requestError.response?.data?.detail
+
+      if (typeof detail === 'string') {
+        setError(detail)
+        return false
+      }
+
+      if (detail?.message) {
+        setError(detail.message)
+        return false
+      }
+
+      if (Array.isArray(detail)) {
+        const messages = detail.map((item) => {
+          const field = item.loc?.at(-1)
+
+          return field
+            ? `${field}: ${item.msg}`
+            : item.msg
+        })
+
+        setError(messages.join(' '))
+        return false
       }
 
       setError(
@@ -164,6 +191,30 @@ function ActivitiesPage() {
     setFormDataToEdit(null)
   }
 
+  function isPastPlannedActivity(activity) {
+    if (activity.status !== 'PLANNED') {
+      return false
+    }
+
+    const scheduledDateTime = new Date(
+      `${activity.scheduled_date}T${activity.scheduled_time}`,
+    )
+
+    return scheduledDateTime < new Date()
+  }
+
+  async function handleCompleteActivity(activity) {
+    await handleUpdateActivity(activity.id, {
+      status: 'COMPLETED',
+    })
+  }
+
+  async function handleCancelPastActivity(activity) {
+    await handleUpdateActivity(activity.id, {
+      status: 'CANCELLED',
+    })
+  }
+
   return (
     <>
       <Header />
@@ -205,6 +256,9 @@ function ActivitiesPage() {
               activities={activities}
               onEdit={handleEditActivity}
               onDelete={handleDeleteActivity}
+              isPastPlannedActivity={isPastPlannedActivity}
+              onComplete={handleCompleteActivity}
+              onCancelPast={handleCancelPastActivity}
             />
           )}
         </div>

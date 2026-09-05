@@ -1,4 +1,13 @@
-function ActivityCard({ activity, onEdit, onDelete }) {
+function ActivityCard({
+  activity,
+  onEdit,
+  onDelete,
+  isPastPlannedActivity,
+  onComplete,
+  onCancelPast,
+}) {
+  const needsConfirmation = isPastPlannedActivity(activity)
+
   return (
     <article className="activity-card">
       <div>
@@ -15,6 +24,28 @@ function ActivityCard({ activity, onEdit, onDelete }) {
       {activity.notes && <p>{activity.notes}</p>}
 
       <p>Estado: {activity.status}</p>
+
+      {needsConfirmation && (
+        <div className="activity-card-confirmation">
+          <p>Esta atividade já passou. Realizou esta atividade?</p>
+
+          <div>
+            <button
+              type="button"
+              onClick={() => onComplete(activity)}
+            >
+              Sim, concluí
+            </button>
+
+            <button
+              type="button"
+              onClick={() => onCancelPast(activity)}
+            >
+              Não realizei
+            </button>
+          </div>
+        </div>
+      )}
 
       <div>
         <button

@@ -1,4 +1,4 @@
-function ActivityCard({ activity }) {
+function ActivityCard({ activity, onEdit, onDelete }) {
   return (
     <article className="activity-card">
       <div>
@@ -17,11 +17,17 @@ function ActivityCard({ activity }) {
       <p>Estado: {activity.status}</p>
 
       <div>
-        <button type="button">
+        <button
+          type="button"
+          onClick={() => onEdit(activity)}
+        >
           Editar
         </button>
 
-        <button type="button">
+        <button
+          type="button"
+          onClick={() => onDelete(activity)}
+        >
           Eliminar
         </button>
       </div>

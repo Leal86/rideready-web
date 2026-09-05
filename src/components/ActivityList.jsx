@@ -1,7 +1,7 @@
 import ActivityCard from './ActivityCard'
 import EmptyState from './EmptyState'
 
-function ActivityList({ activities }) {
+function ActivityList({ activities, onEdit, onDelete }) {
   if (activities.length === 0) {
     return <EmptyState />
   }
@@ -15,6 +15,8 @@ function ActivityList({ activities }) {
           <ActivityCard
             key={activity.id}
             activity={activity}
+            onEdit={onEdit}
+            onDelete={onDelete}
           />
         ))}
       </div>

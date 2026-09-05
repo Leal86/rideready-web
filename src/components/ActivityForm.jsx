@@ -9,8 +9,17 @@ const initialForm = {
   notes: '',
 }
 
-function ActivityForm({ onCreate, isSubmitting }) {
-  const [formData, setFormData] = useState(initialForm)
+function ActivityForm({
+  onCreate,
+  onUpdate,
+  isSubmitting,
+  editingActivity,
+  formDataToEdit,
+  onCancelEdit,
+}) {
+  const [formData, setFormData] = useState(
+    formDataToEdit ?? initialForm,
+  )
 
   function handleChange(event) {
     const { name, value } = event.target
@@ -24,10 +33,17 @@ function ActivityForm({ onCreate, isSubmitting }) {
   async function handleSubmit(event) {
     event.preventDefault()
 
-    const created = await onCreate({
+    const payload = {
       ...formData,
       notes: formData.notes || null,
-    })
+    }
+
+    if (editingActivity) {
+      await onUpdate(editingActivity.id, payload)
+      return
+    }
+
+    const created = await onCreate(payload)
 
     if (created) {
       setFormData(initialForm)
@@ -39,7 +55,9 @@ function ActivityForm({ onCreate, isSubmitting }) {
       <div className="activity-form-card__header">
         <div>
           <span className="eyebrow">Planeamento</span>
-          <h2>Nova atividade</h2>
+          <h2>
+            {editingActivity ? 'Editar atividade' : 'Nova atividade'}
+          </h2>
         </div>
 
         <p>
@@ -127,12 +145,27 @@ function ActivityForm({ onCreate, isSubmitting }) {
         </div>
 
         <div className="form-actions form-field--full">
+          {editingActivity && (
+            <button
+              className="button"
+              type="button"
+              onClick={onCancelEdit}
+              disabled={isSubmitting}
+            >
+              Cancelar
+            </button>
+          )}
+
           <button
             className="button button--primary"
             type="submit"
             disabled={isSubmitting}
           >
-            {isSubmitting ? 'A criar...' : 'Criar atividade'}
+            {isSubmitting
+              ? 'A guardar...'
+              : editingActivity
+                ? 'Guardar alterações'
+                : 'Criar atividade'}
           </button>
         </div>
       </form>

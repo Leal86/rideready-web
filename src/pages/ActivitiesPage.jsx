@@ -10,6 +10,8 @@ function ActivitiesPage() {
   const [isLoading, setIsLoading] = useState(true)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState('')
+  const [editingActivity, setEditingActivity] = useState(null)
+  const [formDataToEdit, setFormDataToEdit] = useState(null)
 
   useEffect(() => {
     async function loadActivities() {
@@ -50,6 +52,84 @@ function ActivitiesPage() {
     }
   }
 
+  async function handleUpdateActivity(activityId, payload) {
+    try {
+      setIsSubmitting(true)
+      setError('')
+
+      const response = await api.patch(
+        `/activities/${activityId}`,
+        payload,
+      )
+
+      setActivities((current) =>
+        current.map((activity) =>
+          activity.id === activityId ? response.data : activity,
+        ),
+      )
+
+      setEditingActivity(null)
+      setFormDataToEdit(null)
+
+      return true
+    } catch {
+      setError(
+        'Não foi possível atualizar a atividade. Verifique os dados e tente novamente.',
+      )
+
+      return false
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  async function handleDeleteActivity(activity) {
+    const confirmed = window.confirm(
+      `Tem a certeza de que pretende eliminar "${activity.title}"?`,
+    )
+
+    if (!confirmed) {
+      return
+    }
+
+    try {
+      setError('')
+
+      await api.delete(`/activities/${activity.id}`)
+
+      setActivities((current) =>
+        current.filter((item) => item.id !== activity.id),
+      )
+    } catch {
+      setError(
+        'Não foi possível eliminar a atividade. Tente novamente.',
+      )
+    }
+  }
+
+  function handleEditActivity(activity) {
+    setEditingActivity(activity)
+
+    setFormDataToEdit({
+      title: activity.title,
+      activity_type: activity.activity_type,
+      location_name: activity.location_name,
+      scheduled_date: activity.scheduled_date,
+      scheduled_time: activity.scheduled_time.slice(0, 5),
+      notes: activity.notes ?? '',
+    })
+
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth',
+    })
+  }
+
+  function handleCancelEdit() {
+    setEditingActivity(null)
+    setFormDataToEdit(null)
+  }
+
   return (
     <>
       <Header />
@@ -65,8 +145,13 @@ function ActivitiesPage() {
           </section>
 
           <ActivityForm
+            key={editingActivity?.id ?? 'new'}
             onCreate={handleCreateActivity}
+            onUpdate={handleUpdateActivity}
             isSubmitting={isSubmitting}
+            editingActivity={editingActivity}
+            formDataToEdit={formDataToEdit}
+            onCancelEdit={handleCancelEdit}
           />
 
           {isLoading && (
@@ -82,7 +167,11 @@ function ActivitiesPage() {
           )}
 
           {!isLoading && !error && (
-            <ActivityList activities={activities} />
+            <ActivityList
+              activities={activities}
+              onEdit={handleEditActivity}
+              onDelete={handleDeleteActivity}
+            />
           )}
         </div>
       </main>

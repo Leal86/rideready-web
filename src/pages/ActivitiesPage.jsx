@@ -41,7 +41,41 @@ function ActivitiesPage() {
       setActivities((current) => [...current, response.data])
 
       return true
-    } catch {
+    } catch (requestError) {
+      if (
+        requestError.response?.status === 409 &&
+        requestError.response?.data?.detail
+      ) {
+        const conflict = requestError.response.data.detail
+
+        const confirmed = window.confirm(
+          `${conflict.message}\n\n` +
+          `Atividade existente: "${conflict.conflicting_activity_title}".\n\n` +
+          'Pretende guardar esta atividade mesmo assim?',
+        )
+
+        if (!confirmed) {
+          return false
+        }
+
+        try {
+          const response = await api.post(
+            '/activities?allow_conflict=true',
+            payload,
+          )
+
+          setActivities((current) => [...current, response.data])
+
+          return true
+        } catch {
+          setError(
+            'Não foi possível criar a atividade após a confirmação.',
+          )
+
+          return false
+        }
+      }
+
       setError(
         'Não foi possível criar a atividade. Verifique os dados e tente novamente.',
       )

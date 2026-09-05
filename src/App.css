@@ -288,3 +288,25 @@
     grid-template-columns: 1fr;
   }
 }
+
+.feedback-message {
+  margin-top: var(--space-xl);
+  padding: var(--space-lg);
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-medium);
+}
+
+.feedback-message p {
+  margin: 0;
+  color: var(--color-text-secondary);
+}
+
+.feedback-message--error {
+  border-color: var(--color-danger);
+  background-color: rgba(217, 83, 79, 0.06);
+}
+
+.feedback-message--error p {
+  color: var(--color-danger);
+}

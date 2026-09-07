@@ -8,6 +8,10 @@ function ActivityList({
   isPastPlannedActivity,
   onComplete,
   onCancelPast,
+  weatherByActivity,
+  weatherLoadingByActivity,
+  weatherErrorByActivity,
+  onRefreshWeather,
 }) {
   if (activities.length === 0) {
     return <EmptyState />
@@ -27,6 +31,10 @@ function ActivityList({
             isPastPlannedActivity={isPastPlannedActivity}
             onComplete={onComplete}
             onCancelPast={onCancelPast}
+            weather={weatherByActivity[activity.id]}
+            isWeatherLoading={weatherLoadingByActivity[activity.id] ?? false}
+            weatherError={weatherErrorByActivity[activity.id] ?? ''}
+            onRefreshWeather={onRefreshWeather}
           />
         ))}
       </div>

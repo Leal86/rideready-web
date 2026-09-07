@@ -5,6 +5,10 @@ function ActivityCard({
   isPastPlannedActivity,
   onComplete,
   onCancelPast,
+  weather,
+  isWeatherLoading,
+  weatherError,
+  onRefreshWeather,
 }) {
   const needsConfirmation = isPastPlannedActivity(activity)
 
@@ -24,6 +28,77 @@ function ActivityCard({
       {activity.notes && <p>{activity.notes}</p>}
 
       <p>Estado: {activity.status}</p>
+
+      <div className="activity-weather">
+        <h4>Condições meteorológicas</h4>
+
+        {isWeatherLoading && (
+          <p>A consultar condições...</p>
+        )}
+
+        {!isWeatherLoading && weatherError && (
+          <p>{weatherError}</p>
+        )}
+
+        {!isWeatherLoading && !weatherError && weather?.available && (
+          <>
+            <p>
+              Avaliação: {weather.assessment?.level}
+            </p>
+
+            <p>
+              Temperatura: {weather.temperature} °C
+            </p>
+
+            <p>
+              Sensação térmica: {weather.apparent_temperature} °C
+            </p>
+
+            <p>
+              Probabilidade de precipitação:{' '}
+              {weather.precipitation_probability}%
+            </p>
+
+            <p>
+              Vento: {weather.wind_speed} km/h
+            </p>
+
+            {weather.assessment?.reasons?.map((reason) => (
+              <p key={reason}>{reason}</p>
+            ))}
+
+            {weather.checked_at && (
+              <p>
+                Consultado em:{' '}
+                {new Date(weather.checked_at).toLocaleString('pt-PT')}
+              </p>
+            )}
+          </>
+        )}
+
+        {!isWeatherLoading &&
+          !weatherError &&
+          weather &&
+          !weather.available && (
+            <>
+              <p>Previsão ainda indisponível.</p>
+
+              {weather.message && (
+                <p>{weather.message}</p>
+              )}
+            </>
+          )}
+
+        <button
+          type="button"
+          onClick={() => onRefreshWeather(activity.id)}
+          disabled={isWeatherLoading}
+        >
+          {isWeatherLoading
+            ? 'A atualizar...'
+            : 'Atualizar condições'}
+        </button>
+      </div>
 
       {needsConfirmation && (
         <div className="activity-card-confirmation">

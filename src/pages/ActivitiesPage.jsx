@@ -12,6 +12,9 @@ function ActivitiesPage() {
   const [error, setError] = useState('')
   const [editingActivity, setEditingActivity] = useState(null)
   const [formDataToEdit, setFormDataToEdit] = useState(null)
+  const [weatherByActivity, setWeatherByActivity] = useState({})
+  const [weatherLoadingByActivity, setWeatherLoadingByActivity] = useState({})
+  const [weatherErrorByActivity, setWeatherErrorByActivity] = useState({})
 
   useEffect(() => {
     async function loadActivities() {
@@ -31,6 +34,40 @@ function ActivitiesPage() {
     loadActivities()
   }, [])
 
+  async function loadWeatherForActivity(activityId) {
+    try {
+      setWeatherLoadingByActivity((current) => ({
+        ...current,
+        [activityId]: true,
+      }))
+
+      setWeatherErrorByActivity((current) => ({
+        ...current,
+        [activityId]: '',
+      }))
+
+      const response = await api.get(
+        `/activities/${activityId}/weather`,
+      )
+
+      setWeatherByActivity((current) => ({
+        ...current,
+        [activityId]: response.data,
+      }))
+    } catch {
+      setWeatherErrorByActivity((current) => ({
+        ...current,
+        [activityId]:
+          'Não foi possível consultar as condições meteorológicas.',
+      }))
+    } finally {
+      setWeatherLoadingByActivity((current) => ({
+        ...current,
+        [activityId]: false,
+      }))
+    }
+  }
+
   async function handleCreateActivity(payload) {
     try {
       setIsSubmitting(true)
@@ -39,6 +76,8 @@ function ActivitiesPage() {
       const response = await api.post('/activities', payload)
 
       setActivities((current) => [...current, response.data])
+
+      await loadWeatherForActivity(response.data.id)
 
       return true
     }
@@ -68,7 +107,10 @@ function ActivitiesPage() {
 
           setActivities((current) => [...current, response.data])
 
+          await loadWeatherForActivity(response.data.id)
+
           return true
+
         } catch {
           setError(
             'Não foi possível criar a atividade após a confirmação.',
@@ -131,6 +173,8 @@ function ActivitiesPage() {
 
       setEditingActivity(null)
       setFormDataToEdit(null)
+
+      await loadWeatherForActivity(activityId)
 
       return true
     } catch {
@@ -259,6 +303,10 @@ function ActivitiesPage() {
               isPastPlannedActivity={isPastPlannedActivity}
               onComplete={handleCompleteActivity}
               onCancelPast={handleCancelPastActivity}
+              weatherByActivity={weatherByActivity}
+              weatherLoadingByActivity={weatherLoadingByActivity}
+              weatherErrorByActivity={weatherErrorByActivity}
+              onRefreshWeather={loadWeatherForActivity}
             />
           )}
         </div>

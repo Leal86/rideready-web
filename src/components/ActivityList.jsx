@@ -3,6 +3,7 @@ import EmptyState from './EmptyState'
 
 function ActivityList({
   activities,
+  hasActiveFilters,
   onEdit,
   onDelete,
   isPastPlannedActivity,
@@ -14,6 +15,22 @@ function ActivityList({
   onRefreshWeather,
 }) {
   if (activities.length === 0) {
+    if (hasActiveFilters) {
+      return (
+        <section className="empty-state">
+          <div className="empty-state__icon">?</div>
+
+          <div>
+            <h3>Nenhuma atividade encontrada</h3>
+            <p>
+              Nenhuma atividade corresponde aos filtros selecionados.
+              Altere a pesquisa ou os filtros para ver outros resultados.
+            </p>
+          </div>
+        </section>
+      )
+    }
+
     return <EmptyState />
   }
 

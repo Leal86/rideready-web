@@ -4,6 +4,7 @@ import ActivityForm from '../components/ActivityForm'
 import ActivityList from '../components/ActivityList'
 import Header from '../components/Header'
 import api from '../services/api'
+import ActivityFilters from '../components/ActivityFilters'
 
 function ActivitiesPage() {
   const [activities, setActivities] = useState([])
@@ -15,6 +16,10 @@ function ActivitiesPage() {
   const [weatherByActivity, setWeatherByActivity] = useState({})
   const [weatherLoadingByActivity, setWeatherLoadingByActivity] = useState({})
   const [weatherErrorByActivity, setWeatherErrorByActivity] = useState({})
+  const [searchTerm, setSearchTerm] = useState('')
+  const [statusFilter, setStatusFilter] = useState('ALL')
+  const [typeFilter, setTypeFilter] = useState('ALL')
+  const [dateFilter, setDateFilter] = useState('ALL')
 
   useEffect(() => {
     async function loadActivities() {
@@ -174,7 +179,23 @@ function ActivitiesPage() {
       setEditingActivity(null)
       setFormDataToEdit(null)
 
-      await loadWeatherForActivity(activityId)
+      if (response.data.status !== 'CANCELLED') {
+        await loadWeatherForActivity(activityId)
+      } else {
+        setWeatherByActivity((current) => {
+          const updated = { ...current }
+          delete updated[activityId]
+
+          return updated
+        })
+
+        setWeatherErrorByActivity((current) => {
+          const updated = { ...current }
+          delete updated[activityId]
+
+          return updated
+        })
+      }
 
       return true
     } catch {
@@ -259,6 +280,66 @@ function ActivitiesPage() {
     })
   }
 
+  const filteredActivities = activities.filter((activity) => {
+    const normalizedSearch = searchTerm.trim().toLowerCase()
+
+    const matchesSearch =
+      normalizedSearch === '' ||
+      activity.title.toLowerCase().includes(normalizedSearch) ||
+      activity.location_name.toLowerCase().includes(normalizedSearch)
+
+    const matchesStatus =
+      statusFilter === 'ALL' ||
+      activity.status === statusFilter
+
+    const matchesType =
+      typeFilter === 'ALL' ||
+      activity.activity_type === typeFilter
+
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+
+    const activityDate = new Date(
+      `${activity.scheduled_date}T00:00:00`,
+    )
+
+    let matchesDate = true
+
+    if (dateFilter === 'TODAY') {
+      matchesDate =
+        activityDate.getTime() === today.getTime()
+    }
+
+    if (dateFilter === 'NEXT_7_DAYS') {
+      const sevenDaysLater = new Date(today)
+
+      sevenDaysLater.setDate(today.getDate() + 7)
+
+      matchesDate =
+        activityDate >= today &&
+        activityDate <= sevenDaysLater
+    }
+
+    if (dateFilter === 'THIS_MONTH') {
+      matchesDate =
+        activityDate.getMonth() === today.getMonth() &&
+        activityDate.getFullYear() === today.getFullYear()
+    }
+
+    return (
+      matchesSearch &&
+      matchesStatus &&
+      matchesType &&
+      matchesDate
+    )
+  })
+
+  const hasActiveFilters =
+    searchTerm.trim() !== '' ||
+    statusFilter !== 'ALL' ||
+    typeFilter !== 'ALL' ||
+    dateFilter !== 'ALL'
+
   return (
     <>
       <Header />
@@ -283,6 +364,17 @@ function ActivitiesPage() {
             onCancelEdit={handleCancelEdit}
           />
 
+          <ActivityFilters
+            searchTerm={searchTerm}
+            onSearchChange={setSearchTerm}
+            statusFilter={statusFilter}
+            onStatusChange={setStatusFilter}
+            typeFilter={typeFilter}
+            onTypeChange={setTypeFilter}
+            dateFilter={dateFilter}
+            onDateChange={setDateFilter}
+          />
+
           {isLoading && (
             <section className="feedback-message">
               <p>A carregar atividades...</p>
@@ -297,7 +389,8 @@ function ActivitiesPage() {
 
           {!isLoading && !error && (
             <ActivityList
-              activities={activities}
+              activities={filteredActivities}
+              hasActiveFilters={hasActiveFilters}
               onEdit={handleEditActivity}
               onDelete={handleDeleteActivity}
               isPastPlannedActivity={isPastPlannedActivity}

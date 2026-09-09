@@ -2,15 +2,42 @@ import { useEffect, useState } from 'react'
 
 import ActivityForm from '../components/ActivityForm'
 import ActivityList from '../components/ActivityList'
-import Header from '../components/Header'
 import api from '../services/api'
 import ActivityFilters from '../components/ActivityFilters'
+
+
+function buildWeatherSnapshot(activity) {
+  if (!activity.weather_checked_at) {
+    return null
+  }
+
+  return {
+    available: true,
+    checked_at: activity.weather_checked_at,
+    temperature: activity.weather_temperature,
+    apparent_temperature: activity.weather_apparent_temperature,
+    precipitation_probability:
+      activity.weather_precipitation_probability,
+    precipitation: activity.weather_precipitation,
+    weather_code: activity.weather_code,
+    wind_speed: activity.weather_wind_speed,
+    wind_gusts: activity.weather_wind_gusts,
+    assessment: activity.weather_assessment_level
+      ? {
+        level: activity.weather_assessment_level,
+        reasons: activity.weather_assessment_reasons ?? [],
+      }
+      : null,
+  }
+}
+
 
 function ActivitiesPage() {
   const [activities, setActivities] = useState([])
   const [isLoading, setIsLoading] = useState(true)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState('')
+  const [successMessage, setSuccessMessage] = useState('')
   const [editingActivity, setEditingActivity] = useState(null)
   const [formDataToEdit, setFormDataToEdit] = useState(null)
   const [weatherByActivity, setWeatherByActivity] = useState({})
@@ -27,6 +54,18 @@ function ActivitiesPage() {
         const response = await api.get('/activities')
 
         setActivities(response.data)
+
+        const persistedWeather = {}
+
+        response.data.forEach((activity) => {
+          const snapshot = buildWeatherSnapshot(activity)
+
+          if (snapshot) {
+            persistedWeather[activity.id] = snapshot
+          }
+        })
+
+        setWeatherByActivity(persistedWeather)
       } catch {
         setError(
           'Não foi possível carregar as atividades. Verifique se a API está disponível.',
@@ -77,10 +116,15 @@ function ActivitiesPage() {
     try {
       setIsSubmitting(true)
       setError('')
+      setSuccessMessage('')
 
       const response = await api.post('/activities', payload)
 
-      setActivities((current) => [...current, response.data])
+      setActivities((current) => [response.data, ...current])
+
+      setSuccessMessage(
+        `A atividade "${response.data.title}" foi criada com sucesso.`,
+      )
 
       await loadWeatherForActivity(response.data.id)
 
@@ -110,7 +154,11 @@ function ActivitiesPage() {
             payload,
           )
 
-          setActivities((current) => [...current, response.data])
+          setActivities((current) => [response.data, ...current])
+
+          setSuccessMessage(
+            `A atividade "${response.data.title}" foi criada com sucesso.`,
+          )
 
           await loadWeatherForActivity(response.data.id)
 
@@ -179,9 +227,11 @@ function ActivitiesPage() {
       setEditingActivity(null)
       setFormDataToEdit(null)
 
-      if (response.data.status !== 'CANCELLED') {
+      if (response.data.status === 'PLANNED') {
         await loadWeatherForActivity(activityId)
-      } else {
+      }
+
+      if (response.data.status === 'CANCELLED') {
         setWeatherByActivity((current) => {
           const updated = { ...current }
           delete updated[activityId]
@@ -220,11 +270,16 @@ function ActivitiesPage() {
 
     try {
       setError('')
+      setSuccessMessage('')
 
       await api.delete(`/activities/${activity.id}`)
 
       setActivities((current) =>
         current.filter((item) => item.id !== activity.id),
+      )
+
+      setSuccessMessage(
+        `A atividade "${activity.title}" foi eliminada com sucesso.`,
       )
     } catch {
       setError(
@@ -275,9 +330,25 @@ function ActivitiesPage() {
   }
 
   async function handleCancelPastActivity(activity) {
-    await handleUpdateActivity(activity.id, {
+    setSuccessMessage('')
+
+    const confirmed = window.confirm(
+      `Tem a certeza de que pretende cancelar "${activity.title}"?`,
+    )
+
+    if (!confirmed) {
+      return
+    }
+
+    const updated = await handleUpdateActivity(activity.id, {
       status: 'CANCELLED',
     })
+
+    if (updated) {
+      setSuccessMessage(
+        `A atividade "${activity.title}" foi cancelada com sucesso.`,
+      )
+    }
   }
 
   const filteredActivities = activities.filter((activity) => {
@@ -341,70 +412,98 @@ function ActivitiesPage() {
     dateFilter !== 'ALL'
 
   return (
-    <>
-      <Header />
 
-      <main className="app">
-        <div className="app-content">
-          <section>
-            <h1>As minhas atividades</h1>
-            <p>
-              Planeie atividades ao ar livre e consulte as condições
-              meteorológicas para o local escolhido.
-            </p>
-          </section>
+    <main className="app-content">
 
-          <ActivityForm
-            key={editingActivity?.id ?? 'new'}
-            onCreate={handleCreateActivity}
-            onUpdate={handleUpdateActivity}
-            isSubmitting={isSubmitting}
-            editingActivity={editingActivity}
-            formDataToEdit={formDataToEdit}
-            onCancelEdit={handleCancelEdit}
-          />
+      {successMessage && (
+        <div
+          className="success-modal-overlay"
+          role="presentation"
+        >
+          <div
+            className="success-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="success-modal-title"
+          >
+            <div className="success-modal__icon" aria-hidden="true">
+              ✓
+            </div>
 
-          <ActivityFilters
-            searchTerm={searchTerm}
-            onSearchChange={setSearchTerm}
-            statusFilter={statusFilter}
-            onStatusChange={setStatusFilter}
-            typeFilter={typeFilter}
-            onTypeChange={setTypeFilter}
-            dateFilter={dateFilter}
-            onDateChange={setDateFilter}
-          />
+            <h2 id="success-modal-title">
+              Operação concluída
+            </h2>
 
-          {isLoading && (
-            <section className="feedback-message">
-              <p>A carregar atividades...</p>
-            </section>
-          )}
+            <p>{successMessage}</p>
 
-          {error && (
-            <section className="feedback-message feedback-message--error">
-              <p>{error}</p>
-            </section>
-          )}
-
-          {!isLoading && !error && (
-            <ActivityList
-              activities={filteredActivities}
-              hasActiveFilters={hasActiveFilters}
-              onEdit={handleEditActivity}
-              onDelete={handleDeleteActivity}
-              isPastPlannedActivity={isPastPlannedActivity}
-              onComplete={handleCompleteActivity}
-              onCancelPast={handleCancelPastActivity}
-              weatherByActivity={weatherByActivity}
-              weatherLoadingByActivity={weatherLoadingByActivity}
-              weatherErrorByActivity={weatherErrorByActivity}
-              onRefreshWeather={loadWeatherForActivity}
-            />
-          )}
+            <button
+              type="button"
+              className="button button--primary"
+              onClick={() => setSuccessMessage('')}
+            >
+              Continuar
+            </button>
+          </div>
         </div>
-      </main>
-    </>
+      )}
+
+      <section>
+        <h1>As minhas atividades</h1>
+        <p>
+          Planeie atividades ao ar livre e consulte as condições
+          meteorológicas para o local escolhido.
+        </p>
+      </section>
+
+      <ActivityForm
+        key={editingActivity?.id ?? 'new'}
+        onCreate={handleCreateActivity}
+        onUpdate={handleUpdateActivity}
+        isSubmitting={isSubmitting}
+        editingActivity={editingActivity}
+        formDataToEdit={formDataToEdit}
+        onCancelEdit={handleCancelEdit}
+      />
+
+      <ActivityFilters
+        searchTerm={searchTerm}
+        onSearchChange={setSearchTerm}
+        statusFilter={statusFilter}
+        onStatusChange={setStatusFilter}
+        typeFilter={typeFilter}
+        onTypeChange={setTypeFilter}
+        dateFilter={dateFilter}
+        onDateChange={setDateFilter}
+      />
+
+      {isLoading && (
+        <section className="feedback-message">
+          <p>A carregar atividades...</p>
+        </section>
+      )}
+
+      {error && (
+        <section className="feedback-message feedback-message--error">
+          <p>{error}</p>
+        </section>
+      )}
+
+      {!isLoading && !error && (
+        <ActivityList
+          activities={filteredActivities}
+          hasActiveFilters={hasActiveFilters}
+          onEdit={handleEditActivity}
+          onDelete={handleDeleteActivity}
+          isPastPlannedActivity={isPastPlannedActivity}
+          onComplete={handleCompleteActivity}
+          onCancelPast={handleCancelPastActivity}
+          weatherByActivity={weatherByActivity}
+          weatherLoadingByActivity={weatherLoadingByActivity}
+          weatherErrorByActivity={weatherErrorByActivity}
+          onRefreshWeather={loadWeatherForActivity}
+        />
+      )}
+    </main>
   )
 }
 

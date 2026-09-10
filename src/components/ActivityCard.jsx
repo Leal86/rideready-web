@@ -2,6 +2,9 @@ import { useState } from 'react'
 
 function ActivityCard({
   activity,
+  isBulkSelectionMode,
+  isSelected,
+  onToggleSelection,
   onEdit,
   onDelete,
   isPastPlannedActivity,
@@ -84,7 +87,19 @@ function ActivityCard({
     <article
       className={`activity-card activity-card--${activity.status.toLowerCase()}`}
     >
+      {isBulkSelectionMode && (
+        <label className="activity-card__selection">
+          <input
+            type="checkbox"
+            checked={isSelected}
+            onChange={() => onToggleSelection(activity.id)}
+          />
+          <span>Selecionar</span>
+        </label>
+      )}
+
       <div className="activity-card__compact">
+
         <span className="activity-card__type">
           {activityTypeLabels[activity.activity_type]}
         </span>

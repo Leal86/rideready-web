@@ -47,6 +47,10 @@ function ActivitiesPage() {
   const [statusFilter, setStatusFilter] = useState('ALL')
   const [typeFilter, setTypeFilter] = useState('ALL')
   const [dateFilter, setDateFilter] = useState('ALL')
+  const [showScrollTop, setShowScrollTop] = useState(false)
+  const [selectedActivityIds, setSelectedActivityIds] = useState([])
+  const [isBulkSelectionMode, setIsBulkSelectionMode] = useState(false)
+  const [isBulkDeleting, setIsBulkDeleting] = useState(false)
 
   useEffect(() => {
     async function loadActivities() {
@@ -76,6 +80,20 @@ function ActivitiesPage() {
     }
 
     loadActivities()
+  }, [])
+
+  useEffect(() => {
+    function handleScroll() {
+      setShowScrollTop(window.scrollY > 500)
+    }
+
+    window.addEventListener('scroll', handleScroll)
+
+    handleScroll()
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll)
+    }
   }, [])
 
   async function loadWeatherForActivity(activityId) {
@@ -259,6 +277,99 @@ function ActivitiesPage() {
     }
   }
 
+  function handleStartBulkSelection() {
+    setSelectedActivityIds([])
+    setIsBulkSelectionMode(true)
+  }
+
+  function handleToggleActivitySelection(activityId) {
+    setSelectedActivityIds((current) => {
+      if (current.includes(activityId)) {
+        return current.filter((id) => id !== activityId)
+      }
+
+      return [...current, activityId]
+    })
+  }
+
+  function handleCancelBulkSelection() {
+    setSelectedActivityIds([])
+    setIsBulkSelectionMode(false)
+  }
+
+  async function handleDeleteSelectedActivities() {
+    if (selectedActivityIds.length === 0) {
+      return
+    }
+
+    const confirmed = window.confirm(
+      `Tem a certeza de que pretende eliminar ${selectedActivityIds.length} atividade(s) selecionada(s)?`,
+    )
+
+    if (!confirmed) {
+      return
+    }
+
+    try {
+      setError('')
+      setSuccessMessage('')
+      setIsBulkDeleting(true)
+
+      const results = await Promise.allSettled(
+        selectedActivityIds.map((activityId) =>
+          api.delete(`/activities/${activityId}`),
+        ),
+      )
+
+      const deletedIds = results
+        .map((result, index) =>
+          result.status === 'fulfilled'
+            ? selectedActivityIds[index]
+            : null,
+        )
+        .filter((activityId) => activityId !== null)
+
+      const failedCount =
+        selectedActivityIds.length - deletedIds.length
+
+      if (deletedIds.length > 0) {
+        setActivities((current) =>
+          current.filter(
+            (activity) => !deletedIds.includes(activity.id),
+          ),
+        )
+
+        setSelectedActivityIds((current) =>
+          current.filter(
+            (activityId) => !deletedIds.includes(activityId),
+          ),
+        )
+      }
+
+      if (failedCount === 0) {
+        setSuccessMessage(
+          `${deletedIds.length} atividade(s) eliminada(s) com sucesso.`,
+        )
+
+        setIsBulkSelectionMode(false)
+        setSelectedActivityIds([])
+        return
+      }
+
+      if (deletedIds.length > 0) {
+        setSuccessMessage(
+          `${deletedIds.length} atividade(s) eliminada(s) com sucesso.`,
+        )
+      }
+
+      setError(
+        `Não foi possível eliminar ${failedCount} atividade(s). Tente novamente.`,
+      )
+    } finally {
+      setIsBulkDeleting(false)
+    }
+  }
+
   async function handleDeleteActivity(activity) {
     const confirmed = window.confirm(
       `Tem a certeza de que pretende eliminar "${activity.title}"?`,
@@ -418,6 +529,13 @@ function ActivitiesPage() {
     setDateFilter('ALL')
   }
 
+  function handleScrollToTop() {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth',
+    })
+  }
+
   return (
 
     <main className="app-content">
@@ -502,6 +620,13 @@ function ActivitiesPage() {
         <ActivityList
           activities={filteredActivities}
           hasActiveFilters={hasActiveFilters}
+          isBulkSelectionMode={isBulkSelectionMode}
+          selectedActivityIds={selectedActivityIds}
+          onStartBulkSelection={handleStartBulkSelection}
+          onToggleActivitySelection={handleToggleActivitySelection}
+          onCancelBulkSelection={handleCancelBulkSelection}
+          onDeleteSelectedActivities={handleDeleteSelectedActivities}
+          isBulkDeleting={isBulkDeleting}
           onEdit={handleEditActivity}
           onDelete={handleDeleteActivity}
           isPastPlannedActivity={isPastPlannedActivity}
@@ -513,6 +638,19 @@ function ActivitiesPage() {
           onRefreshWeather={loadWeatherForActivity}
         />
       )}
+
+      {showScrollTop && (
+        <button
+          type="button"
+          className="scroll-top-button"
+          onClick={handleScrollToTop}
+          aria-label="Voltar ao topo da página"
+          title="Voltar ao topo"
+        >
+          ↑
+        </button>
+      )}
+
     </main>
   )
 }

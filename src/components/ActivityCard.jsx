@@ -118,7 +118,7 @@ function ActivityCard({
 
             <span>
               {isCancelled ? (
-                'Sem consulta meteorológica'
+                'Não disponível'
               ) : weather?.available ? (
                 <>
                   {getWeatherIcon(weather)}{' '}

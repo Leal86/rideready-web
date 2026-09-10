@@ -411,6 +411,13 @@ function ActivitiesPage() {
     typeFilter !== 'ALL' ||
     dateFilter !== 'ALL'
 
+  function handleClearFilters() {
+    setSearchTerm('')
+    setStatusFilter('ALL')
+    setTypeFilter('ALL')
+    setDateFilter('ALL')
+  }
+
   return (
 
     <main className="app-content">
@@ -474,6 +481,9 @@ function ActivitiesPage() {
         onTypeChange={setTypeFilter}
         dateFilter={dateFilter}
         onDateChange={setDateFilter}
+        resultCount={filteredActivities.length}
+        hasActiveFilters={hasActiveFilters}
+        onClearFilters={handleClearFilters}
       />
 
       {isLoading && (

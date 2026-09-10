@@ -7,6 +7,9 @@ function ActivityFilters({
     onTypeChange,
     dateFilter,
     onDateChange,
+    resultCount,
+    hasActiveFilters,
+    onClearFilters,
 }) {
     return (
         <section className="activity-filters">
@@ -55,7 +58,7 @@ function ActivityFilters({
                     <option value="WALKING">Caminhada</option>
                     <option value="RUNNING">Corrida</option>
                     <option value="CYCLING">Ciclismo</option>
-                    <option value="HIKING">Trilha</option>
+                    <option value="HIKING">Trilho</option>
                     <option value="OTHER">Outro</option>
                 </select>
             </div>
@@ -77,7 +80,23 @@ function ActivityFilters({
                 </select>
             </div>
 
-           
+            <div className="activity-filters__summary">
+                <span>
+                    {resultCount === 1
+                        ? '1 atividade encontrada'
+                        : `${resultCount} atividades encontradas`}
+                </span>
+
+                {hasActiveFilters && (
+                    <button
+                        type="button"
+                        className="activity-filters__clear"
+                        onClick={onClearFilters}
+                    >
+                        Limpar filtros
+                    </button>
+                )}
+            </div>
         </section>
     )
 }

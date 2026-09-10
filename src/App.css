@@ -187,9 +187,88 @@
   background-color: var(--color-primary-dark);
 }
 
+/* ==========================================================================
+   4. Filtros de atividades
+   ========================================================================== */
+
+.activity-filters {
+  display: grid;
+  grid-template-columns: minmax(240px, 2fr) repeat(3, minmax(140px, 1fr));
+  gap: var(--space-md);
+  align-items: end;
+  margin: var(--space-xl) 0;
+  padding: var(--space-lg);
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-large);
+  box-shadow: var(--shadow-card);
+}
+
+.activity-filters__search,
+.activity-filters__field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.activity-filters label {
+  color: var(--color-text-primary);
+  font-size: 0.875rem;
+  font-weight: var(--font-weight-semibold);
+}
+
+.activity-filters input,
+.activity-filters select {
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-small);
+  background-color: var(--color-surface);
+  color: var(--color-text-primary);
+  outline: none;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.activity-filters input:focus,
+.activity-filters select:focus {
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px rgba(17, 184, 188, 0.12);
+}
+
+.activity-filters__summary {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+  padding-top: var(--space-sm);
+  border-top: 1px solid var(--color-border);
+  color: var(--color-text-secondary);
+  font-size: 0.875rem;
+}
+
+.activity-filters__clear {
+  padding: 8px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-small);
+  background-color: transparent;
+  color: var(--color-accent);
+  font-weight: var(--font-weight-semibold);
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.activity-filters__clear:hover {
+  border-color: var(--color-accent);
+  background-color: rgba(17, 184, 188, 0.08);
+}
 
 /* ==========================================================================
-   4. Autocomplete de localização
+   5. Autocomplete de localização
    ========================================================================== */
 
 .location-autocomplete {
@@ -264,14 +343,14 @@
 
 
 /* ==========================================================================
-   5. Lista e cartões de atividades
+   6. Lista e cartões de atividades
    ========================================================================== */
 
 .activity-list {
   margin-top: var(--space-xl);
 }
 
-.activity-list > h2 {
+.activity-list>h2 {
   margin: 0 0 var(--space-lg);
   color: var(--color-text-primary);
   font-size: 1.5rem;
@@ -281,18 +360,19 @@
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   align-items: start;
-  gap: var(--space-lg);
+  column-gap: var(--space-lg);
+  row-gap: calc(var(--space-lg) + var(--space-sm));
 }
 
 .activity-card {
   display: flex;
   flex-direction: column;
-  gap: var(--space-md);
+  gap: var(--space-lg);
   padding: var(--space-lg);
   background-color: var(--color-surface);
-  border: 1px solid var(--color-border);
+  border: 1.5px solid var(--color-border);
   border-radius: var(--radius-medium);
-  box-shadow: var(--shadow-card);
+  box-shadow: 0 6px 16px rgba(15, 42, 52, 0.24);
 }
 
 .activity-card--planned {
@@ -335,7 +415,7 @@
 
 
 /* ==========================================================================
-   6. Resumo compacto do cartão
+   7. Resumo compacto do cartão
    ========================================================================== */
 
 .activity-card__compact {
@@ -414,7 +494,7 @@
 
 
 /* ==========================================================================
-   7. Detalhes expandidos do cartão
+   8. Detalhes expandidos do cartão
    ========================================================================== */
 
 .activity-card__details {
@@ -429,7 +509,7 @@
   width: 100%;
 }
 
-.activity-card__detail-section + .activity-card__detail-section {
+.activity-card__detail-section+.activity-card__detail-section {
   margin-top: var(--space-lg);
 }
 
@@ -486,7 +566,7 @@
 
 
 /* ==========================================================================
-   8. Confirmações e ações dos cartões
+   9. Confirmações e ações dos cartões
    ========================================================================== */
 
 .activity-card-confirmation {
@@ -496,11 +576,11 @@
   border-radius: var(--radius-small);
 }
 
-.activity-card-confirmation > p {
+.activity-card-confirmation>p {
   margin-bottom: var(--space-md);
 }
 
-.activity-card-confirmation > div {
+.activity-card-confirmation>div {
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-sm);
@@ -508,10 +588,10 @@
 
 .activity-card__actions {
   display: flex;
-  justify-content: center;
+  justify-content: space-evenly;
   flex-wrap: wrap;
   gap: var(--space-md);
-  margin-top: var(--space-lg);
+  margin-top: var(--space-md);
   padding: var(--space-md) 0 var(--space-xs);
   border-top: 1px solid rgba(217, 229, 230, 0.8);
 }
@@ -587,7 +667,7 @@
 
 
 /* ==========================================================================
-   9. Estados vazios e mensagens
+   10. Estados vazios e mensagens
    ========================================================================== */
 
 .empty-state {
@@ -649,7 +729,7 @@
 
 
 /* ==========================================================================
-   10. Modal de sucesso
+   11. Modal de sucesso
    ========================================================================== */
 
 .success-modal-overlay {
@@ -701,7 +781,7 @@
 
 
 /* ==========================================================================
-   11. Dashboard
+   12. Dashboard
    ========================================================================== */
 
 .dashboard-header h1 {
@@ -810,14 +890,126 @@
   color: var(--color-text-secondary);
 }
 
+/* ==========================================================================
+   Filtros de atividades
+   ========================================================================== */
+
+.activity-filters {
+  display: grid;
+  grid-template-columns: minmax(240px, 2fr) repeat(3, minmax(140px, 1fr));
+  gap: var(--space-md);
+  align-items: end;
+  margin: var(--space-xl) 0;
+  padding: var(--space-lg);
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-large);
+  box-shadow: var(--shadow-card);
+}
+
+.activity-filters__search,
+.activity-filters__field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.activity-filters label {
+  color: var(--color-text-primary);
+  font-size: 0.875rem;
+  font-weight: var(--font-weight-semibold);
+}
+
+.activity-filters input,
+.activity-filters select {
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-small);
+  background-color: var(--color-surface);
+  color: var(--color-text-primary);
+  outline: none;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.activity-filters input:focus,
+.activity-filters select:focus {
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px rgba(17, 184, 188, 0.12);
+}
+
+.activity-filters__summary {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+  padding-top: var(--space-sm);
+  border-top: 1px solid var(--color-border);
+  color: var(--color-text-secondary);
+  font-size: 0.875rem;
+}
+
+.activity-filters__clear {
+  padding: 8px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-small);
+  background-color: transparent;
+  color: var(--color-accent);
+  font-weight: var(--font-weight-semibold);
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.activity-filters__clear:hover {
+  border-color: var(--color-accent);
+  background-color: rgba(17, 184, 188, 0.08);
+}
 
 /* ==========================================================================
-   12. Responsividade
+   13. Responsividade
    ========================================================================== */
 
 @media (max-width: 1050px) {
+  .activity-list {
+    padding-inline: var(--space-md);
+  }
+
   .activity-list-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-md);
+  }
+
+  .activity-card {
+    gap: var(--space-sm);
+    padding: var(--space-md);
+  }
+
+  .activity-card__compact {
+    gap: var(--space-sm);
+  }
+}
+
+@media (min-width: 901px) and (max-width: 1050px) {
+
+  .activity-card__actions {
+    justify-content: space-between;
+    flex-wrap: nowrap;
+    gap: var(--space-sm);
+    margin-top: var(--space-md);
+    padding: var(--space-sm) var(--space-xs) var(--space-xs);
+  }
+
+  .activity-card .activity-action {
+    flex: 1 1 0;
+    min-width: 0;
+    min-height: 38px;
+    padding: 0 var(--space-sm);
+    font-size: 0.875rem;
   }
 }
 
@@ -825,7 +1017,21 @@
   .dashboard-stats {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+
+  .activity-list-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .activity-filters {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .activity-filters__search {
+    grid-column: 1 / -1;
+  }
 }
+
+@media (min-width: 521px) and (max-width: 900px) {}
 
 @media (max-width: 720px) {
   .site-header__content {
@@ -883,21 +1089,41 @@
     grid-template-columns: 1fr;
   }
 
-  .activity-card__actions {
-    flex-direction: column;
+  .activity-list {
+    padding-inline: var(--space-md);
   }
 
-  .activity-card__actions .activity-action {
+  .activity-card {
+    padding: var(--space-md);
+  }
+
+  .activity-card__compact {
+    gap: var(--space-sm);
+  }
+
+  .activity-filters {
+    grid-template-columns: 1fr;
+    padding: var(--space-md);
+  }
+
+  .activity-filters__search {
+    grid-column: auto;
+  }
+
+  .activity-filters__summary {
+    grid-column: auto;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .activity-filters__clear {
     width: 100%;
   }
+
 }
 
 @media (max-width: 420px) {
   .activity-card__information {
     width: 100%;
-  }
-
-  .activity-card__information p {
-    grid-template-columns: 90px minmax(0, 1fr);
   }
 }

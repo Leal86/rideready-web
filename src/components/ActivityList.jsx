@@ -5,6 +5,8 @@ function ActivityList({
   activities,
   hasActiveFilters,
   isBulkSelectionMode,
+  onSelectAllVisible,
+  onClearSelected,
   selectedActivityIds,
   onStartBulkSelection,
   onToggleActivitySelection,
@@ -59,6 +61,31 @@ function ActivityList({
             <span>
               {selectedActivityIds.length} selecionada(s)
             </span>
+
+            <button
+              type="button"
+              className="activity-list__bulk-select-all"
+              onClick={onSelectAllVisible}
+              disabled={
+                activities.length === 0 ||
+                isBulkDeleting ||
+                selectedActivityIds.length === activities.length
+              }
+            >
+              Selecionar todas
+            </button>
+
+            <button
+              type="button"
+              className="activity-list__bulk-clear"
+              onClick={onClearSelected}
+              disabled={
+                selectedActivityIds.length === 0 ||
+                isBulkDeleting
+              }
+            >
+              Limpar seleção
+            </button>
 
             <button
               type="button"

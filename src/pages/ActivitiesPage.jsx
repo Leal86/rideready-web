@@ -292,6 +292,16 @@ function ActivitiesPage() {
     })
   }
 
+  function handleSelectAllVisibleActivities() {
+    setSelectedActivityIds(
+      filteredActivities.map((activity) => activity.id),
+    )
+  }
+
+  function handleClearSelectedActivities() {
+    setSelectedActivityIds([])
+  }
+
   function handleCancelBulkSelection() {
     setSelectedActivityIds([])
     setIsBulkSelectionMode(false)
@@ -627,6 +637,8 @@ function ActivitiesPage() {
           onCancelBulkSelection={handleCancelBulkSelection}
           onDeleteSelectedActivities={handleDeleteSelectedActivities}
           isBulkDeleting={isBulkDeleting}
+          onSelectAllVisible={handleSelectAllVisibleActivities}
+          onClearSelected={handleClearSelectedActivities}
           onEdit={handleEditActivity}
           onDelete={handleDeleteActivity}
           isPastPlannedActivity={isPastPlannedActivity}

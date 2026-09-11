@@ -1037,12 +1037,26 @@
 }
 
 .activity-list__selection-button,
+.activity-list__bulk-select-all,
+.activity-list__bulk-clear,
 .activity-list__bulk-delete,
 .activity-list__bulk-cancel {
   min-height: 38px;
   padding: 0 var(--space-md);
   border-radius: var(--radius-medium);
   cursor: pointer;
+}
+
+.activity-list__bulk-select-all {
+  border: 1px solid var(--color-primary);
+  background: transparent;
+  color: var(--color-primary);
+}
+
+.activity-list__bulk-clear {
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: inherit;
 }
 
 .activity-list__selection-button {
@@ -1062,6 +1076,8 @@
   background: var(--color-surface);
 }
 
+.activity-list__bulk-select-all:disabled,
+.activity-list__bulk-clear:disabled,
 .activity-list__bulk-delete:disabled,
 .activity-list__bulk-cancel:disabled {
   cursor: not-allowed;
@@ -1123,6 +1139,104 @@
     min-height: 38px;
     padding: 0 var(--space-sm);
     font-size: 0.875rem;
+  }
+}
+
+@media (max-width: 1024px) {
+  .activity-list__header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--space-md);
+  }
+
+  .activity-list__header h2 {
+    text-align: center;
+  }
+
+  .activity-list__selection-button {
+    align-self: flex-end;
+    width: auto;
+    min-width: 180px;
+  }
+
+  .activity-list__bulk-actions {
+    width: 85%;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  .activity-list__bulk-actions {
+    display: flex;
+    width: 100%;
+    align-self: center;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: nowrap;
+    gap: var(--space-lg);
+  }
+
+  .activity-list__bulk-actions span {
+    flex: 0 0 auto;
+    white-space: nowrap;
+    text-align: left;
+  }
+
+  .activity-list__bulk-select-all,
+  .activity-list__bulk-clear,
+  .activity-list__bulk-delete,
+  .activity-list__bulk-cancel {
+    flex: 1 1 0;
+    width: auto;
+    min-width: 0;
+    padding-left: var(--space-sm);
+    padding-right: var(--space-sm);
+  }
+}
+
+@media (min-width: 521px) and (max-width: 768px) {
+  .activity-list__header {
+    gap: var(--space-sm);
+  }
+
+  .activity-list__header h2 {
+    text-align: center;
+    margin-bottom: 0;
+  }
+
+  .activity-list__bulk-actions {
+    display: flex;
+    width: 100%;
+    align-self: center;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: nowrap;
+    gap: var(--space-md);
+  }
+
+  .activity-list__bulk-actions span {
+    flex: 0 0 auto;
+    white-space: nowrap;
+    text-align: left;
+    font-size: 0.8rem;
+  }
+
+  .activity-list__bulk-select-all,
+  .activity-list__bulk-clear,
+  .activity-list__bulk-delete,
+  .activity-list__bulk-cancel {
+    flex: 1 1 0;
+    width: auto;
+    min-width: 0;
+    padding: 0 var(--space-xs);
+    font-size: 0.8rem;
+  }
+
+  .activity-list__selection-button {
+    align-self: flex-end;
+    width: auto;
+    min-width: 170px;
   }
 }
 
@@ -1206,7 +1320,8 @@
     flex-direction: column;
   }
 
-  .activity-list__selection-button,
+  .activity-list__bulk-select-all,
+  .activity-list__bulk-clear,
   .activity-list__bulk-delete,
   .activity-list__bulk-cancel {
     width: 100%;
@@ -1216,6 +1331,44 @@
 @media (max-width: 520px) {
   .dashboard-stats {
     grid-template-columns: 1fr;
+  }
+
+  .activity-list__header {
+    align-items: stretch;
+  }
+
+  .activity-list__header h2 {
+    width: 100%;
+    text-align: center;
+  }
+
+  .activity-list__bulk-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+  }
+
+  .activity-list__bulk-actions span {
+    width: 100%;
+    text-align: center;
+    margin-bottom: var(--space-xs);
+  }
+
+  .activity-list__selection-button {
+    align-self: center;
+    width: calc(100% - var(--space-md));
+    min-width: 0;
+    min-height: 42px;
+  }
+
+  .activity-list__bulk-select-all,
+  .activity-list__bulk-clear,
+  .activity-list__bulk-delete,
+  .activity-list__bulk-cancel {
+    width: 100%;
+    min-height: 44px;
+    padding: var(--space-sm) var(--space-md);
   }
 
   .activity-list {

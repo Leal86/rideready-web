@@ -1,0 +1,1994 @@
+.calendar-content {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(360px, 500px);
+    grid-template-areas:
+        "header sidebar"
+        "planning planning"
+        "calendar calendar";
+    column-gap: var(--space-xl);
+    row-gap: var(--space-md);
+
+    width: min(100%, 1260px);
+    min-width: 0;
+    margin: 0 auto;
+}
+
+.calendar-header {
+    grid-area: header;
+    min-width: 0;
+    align-self: start;
+}
+
+.calendar-header h1 {
+    margin: 0;
+}
+
+.calendar-sidebar {
+    grid-area: sidebar;
+
+    display: grid;
+    grid-template-columns: minmax(160px, 220px) minmax(200px, 280px);
+    gap: var(--space-sm);
+
+    min-width: 0;
+    justify-self: end;
+    align-self: start;
+}
+
+.calendar-planning {
+    grid-area: planning;
+
+    width: min(100%, 900px);
+    min-width: 0;
+    margin: var(--space-sm) auto 0;
+
+    text-align: center;
+    justify-self: center;
+}
+
+.calendar-layout {
+    grid-area: calendar;
+
+    width: min(100%, 900px);
+    max-width: 900px;
+    min-width: 0;
+    margin: 0 auto;
+
+    justify-self: center;
+}
+
+
+
+.calendar__weekdays,
+.calendar__grid {
+    width: 100%;
+    min-width: 0;
+}
+
+.calendar {
+    padding: var(--space-lg);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-large);
+    box-shadow: var(--shadow-card);
+}
+
+.calendar__toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-md);
+    margin-bottom: var(--space-lg);
+}
+
+.calendar__toolbar h2 {
+    margin: 0;
+    text-align: center;
+}
+
+.calendar__toolbar button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 40px;
+    height: 40px;
+    padding: 0;
+
+    border: none;
+    border-radius: 25%;
+
+    background: var(--color-primary);
+    color: #ffffff;
+
+    cursor: pointer;
+    line-height: 1;
+
+    transition:
+        background-color 0.2s ease,
+        transform 0.2s ease;
+}
+
+.calendar__toolbar button svg {
+    display: block;
+
+    width: 20px;
+    height: 20px;
+
+    flex-shrink: 0;
+}
+
+.calendar__toolbar button:hover {
+    transform: translateY(-1px);
+}
+
+.calendar__toolbar button:active {
+    transform: translateY(0);
+}
+
+.calendar__weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    border-top: 1px solid var(--color-border);
+    border-left: 1px solid var(--color-border);
+}
+
+.calendar__weekdays span {
+    padding: var(--space-sm);
+    border-right: 1px solid var(--color-border);
+    border-bottom: 1px solid var(--color-border);
+    text-align: center;
+    font-weight: 600;
+}
+
+.calendar__grid {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    border-left: 1px solid var(--color-border);
+}
+
+.calendar__day {
+    height: 105px;
+    min-width: 0;
+    padding: var(--space-sm);
+
+    border-right: 1px solid var(--color-border);
+    border-bottom: 1px solid var(--color-border);
+
+    cursor: pointer;
+
+    transition:
+        background-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.calendar__day--empty {
+    background: rgba(0, 0, 0, 0.02);
+    cursor: default;
+}
+
+.calendar__day-number {
+    display: block;
+    margin-bottom: 4px;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.calendar__day-activities {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.calendar__activity {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 4px;
+
+    min-width: 0;
+    max-width: 100%;
+    height: 15px;
+    padding: 2px 5px;
+
+    text-align: center;
+
+    border-left: 3px solid transparent;
+    border-radius: 6px;
+
+    white-space: nowrap;
+}
+
+.calendar__more {
+    display: block;
+    margin-top: 10px;
+    font-size: 0.65rem;
+    font-weight: 700;
+    line-height: 1;
+    color: var(--color-primary);
+    text-align: center;
+    white-space: nowrap;
+}
+
+.calendar__day:not(.calendar__day--empty):hover {
+    background: rgba(0, 120, 170, 0.08);
+    box-shadow: inset 0 0 0 1px var(--color-primary);
+}
+
+.calendar__day--today {
+    box-shadow: inset 0 0 0 2px var(--color-primary);
+}
+
+.calendar__day--selected {
+    background: rgba(0, 120, 170, 0.08);
+}
+
+.calendar__activity strong,
+.calendar__activity span {
+    font-size: 0.80rem;
+    line-height: 1;
+}
+
+.calendar__activity span {
+    flex-shrink: 0;
+}
+
+.calendar__activity--planned {
+    border-left-color: #1f78d1;
+    background: rgba(31, 120, 209, 0.08);
+}
+
+.calendar__activity--completed {
+    border-left-color: #2e8b57;
+    background: rgba(46, 139, 87, 0.08);
+}
+
+.calendar__activity--cancelled {
+    border-left-color: #c44747;
+    background: rgba(196, 71, 71, 0.08);
+    opacity: 0.8;
+}
+
+.calendar__selected-day {
+    margin-top: var(--space-lg);
+    padding-top: var(--space-lg);
+    border-top: 1px solid var(--color-border);
+}
+
+.calendar__selected-day h3 {
+    margin-top: 0;
+    margin-bottom: var(--space-md);
+}
+
+.calendar__selected-day-list {
+    display: grid;
+    gap: var(--space-sm);
+}
+
+.calendar__selected-activity {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-md);
+
+    width: 100%;
+    padding: var(--space-sm) var(--space-md);
+
+    border: 1px solid var(--color-border);
+    border-left: 4px solid transparent;
+    border-radius: var(--radius-medium);
+
+    background: var(--color-surface);
+    color: inherit;
+
+    font: inherit;
+    text-align: left;
+
+    cursor: pointer;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        transform 0.2s ease;
+}
+
+.calendar__selected-activity:hover {
+    border-color: var(--color-primary);
+    box-shadow: 0 4px 12px rgba(15, 42, 52, 0.08);
+    transform: translateY(-1px);
+}
+
+.calendar__selected-activity div {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.calendar__selected-activity div span {
+    font-size: 0.85rem;
+    opacity: 0.75;
+}
+
+.calendar__selected-activity--planned {
+    border-left-color: #1f78d1;
+}
+
+.calendar__selected-activity--completed {
+    border-left-color: #2e8b57;
+}
+
+.calendar__selected-activity--cancelled {
+    border-left-color: #c44747;
+}
+
+.calendar-upcoming__more {
+    display: none;
+}
+
+.calendar-summary,
+.calendar-upcoming {
+    padding: var(--space-lg);
+    min-width: 0;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-large);
+    box-shadow: var(--shadow-card);
+}
+
+.calendar-summary h2,
+.calendar-upcoming h2 {
+    margin-top: var(--space-xs);
+    margin-bottom: var(--space-lg);
+}
+
+.calendar-summary__stats {
+    display: grid;
+    gap: var(--space-sm);
+}
+
+.calendar-summary__stats>div {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: var(--space-sm) var(--space-md);
+
+    border: 1px solid var(--color-border);
+    border-left: 4px solid var(--color-primary);
+    border-radius: var(--radius-medium);
+}
+
+.calendar-summary__stats span {
+    font-size: 0.9rem;
+}
+
+.calendar-summary__stats strong {
+    font-size: 1.2rem;
+}
+
+.calendar-summary__stat--planned {
+    border-left-color: #1f78d1 !important;
+}
+
+.calendar-summary__stat--completed {
+    border-left-color: #2e8b57 !important;
+}
+
+.calendar-summary__stat--cancelled {
+    border-left-color: #c44747 !important;
+}
+
+.calendar-upcoming__header {
+    margin-bottom: var(--space-md);
+}
+
+.calendar-upcoming__list {
+    display: grid;
+    gap: var(--space-sm);
+}
+
+.calendar-upcoming__item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-sm);
+
+    width: 100%;
+    min-width: 0;
+
+    padding: var(--space-sm);
+
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-medium);
+
+    background: var(--color-surface);
+    color: inherit;
+
+    font: inherit;
+    text-align: left;
+
+    cursor: pointer;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        transform 0.2s ease;
+}
+
+.calendar-upcoming__item:hover {
+    border-color: var(--color-primary);
+    box-shadow: 0 4px 12px rgba(15, 42, 52, 0.08);
+    transform: translateY(-1px);
+}
+
+.calendar-upcoming__datetime {
+    flex: 0 0 auto;
+    min-width: 42px;
+
+    text-align: right;
+    white-space: nowrap;
+}
+
+.calendar-upcoming__content {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+}
+
+.calendar-upcoming__content strong {
+    display: block;
+
+    max-width: 100%;
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.calendar-upcoming__content span {
+    display: inline-flex;
+
+    margin-top: 2px;
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    font-size: 0.8rem;
+}
+
+.calendar-upcoming__datetime strong,
+.calendar-upcoming__datetime span {
+    display: block;
+}
+
+.calendar-upcoming__datetime strong {
+    font-size: 0.8rem;
+}
+
+.calendar-upcoming__datetime span {
+    margin-top: 2px;
+    font-size: 0.8rem;
+    opacity: 0.75;
+}
+
+.calendar-upcoming__empty {
+    margin: 0;
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+.calendar-activity-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: var(--space-lg);
+
+    background: rgba(15, 42, 52, 0.45);
+    backdrop-filter: blur(4px);
+}
+
+.calendar-activity-modal__content {
+    position: relative;
+
+    width: min(100%, 520px);
+
+    padding: var(--space-xl);
+
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-large);
+    box-shadow: 0 18px 50px rgba(15, 42, 52, 0.2);
+}
+
+.calendar-activity-modal__content h2 {
+    margin-top: var(--space-sm);
+    margin-bottom: var(--space-lg);
+    padding-right: 40px;
+}
+
+.calendar-activity-modal__close {
+    position: absolute;
+    top: var(--space-md);
+    right: var(--space-md);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 36px;
+    height: 36px;
+    padding: 0;
+
+    border: none;
+    border-radius: 25%;
+
+    background: var(--color-primary);
+    color: #ffffff;
+
+    font-size: 1.5rem;
+    line-height: 1;
+
+    cursor: pointer;
+}
+
+.calendar-activity-modal__details {
+    display: grid;
+    gap: var(--space-sm);
+}
+
+.calendar-activity-modal__details p {
+    margin: 0;
+    line-height: 1.5;
+}
+
+.calendar-activity-modal__weather {
+    margin-top: var(--space-lg);
+    padding-top: var(--space-lg);
+
+    border-top: 1px solid var(--color-border);
+}
+
+.calendar-activity-modal__weather-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: var(--space-md);
+
+    margin-bottom: var(--space-md);
+}
+
+.calendar-activity-modal__weather-header h3 {
+    margin: var(--space-xs) 0 0;
+}
+
+.calendar-activity-modal__weather-date {
+    flex-shrink: 0;
+
+    font-size: 0.75rem;
+    opacity: 0.7;
+}
+
+.calendar-activity-modal__weather-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-sm);
+}
+
+.calendar-activity-modal__weather-grid>div {
+    padding: var(--space-sm);
+
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-medium);
+
+    text-align: center;
+}
+
+.calendar-activity-modal__weather-grid span,
+.calendar-activity-modal__weather-grid strong {
+    display: block;
+}
+
+.calendar-activity-modal__weather-grid span {
+    margin-bottom: 3px;
+
+    font-size: 0.75rem;
+    opacity: 0.7;
+}
+
+.calendar-activity-modal__weather-grid strong {
+    font-size: 0.9rem;
+}
+
+.calendar-activity-modal__assessment {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    margin-top: var(--space-md);
+    padding: var(--space-sm) var(--space-md);
+
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-medium);
+}
+
+.calendar-activity-modal__reasons {
+    margin-top: var(--space-md);
+}
+
+.calendar-activity-modal__reasons ul {
+    margin-bottom: 0;
+    padding-left: 20px;
+}
+
+.calendar-activity-modal__weather-empty {
+    margin: 0;
+
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+.calendar-activity-modal__actions {
+    display: flex;
+    justify-content: flex-end;
+
+    margin-top: var(--space-lg);
+}
+
+.calendar-activity-modal__activities-button {
+    min-height: 42px;
+    padding: 0 var(--space-lg);
+
+    border: none;
+    border-radius: var(--radius-medium);
+
+    background: var(--color-primary);
+    color: #ffffff;
+
+    font: inherit;
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+.calendar__mobile-count {
+    display: none;
+}
+
+.calendar-activity-modal__assessment-result {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs);
+}
+
+.calendar-activity-modal__weather-icon {
+    font-size: 1.1rem;
+    line-height: 1;
+}
+
+@media (max-width: 700px) {
+
+    .calendar-sidebar {
+        grid-template-columns: 160px 210px;
+        gap: var(--space-xs);
+    }
+
+    .calendar-summary,
+    .calendar-upcoming {
+        padding: var(--space-sm);
+    }
+
+    .calendar-summary h2,
+    .calendar-upcoming h2 {
+        margin-bottom: var(--space-sm);
+        font-size: 1rem;
+    }
+
+    .calendar-summary__stats {
+        gap: 4px;
+    }
+
+    .calendar-summary__stats>div {
+        padding: 5px 7px;
+    }
+
+    .calendar-upcoming__list {
+        gap: 4px;
+    }
+
+    .calendar-upcoming__item {
+        padding: 5px 6px;
+    }
+
+    .calendar-sidebar {
+        grid-template-columns: 1fr;
+    }
+
+    .calendar-activity-modal {
+        padding: var(--space-md);
+    }
+
+    .calendar-activity-modal__content {
+        max-height: calc(100vh - 32px);
+        padding: var(--space-lg);
+
+        overflow-y: auto;
+    }
+
+    .calendar-activity-modal__weather-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .calendar-activity-modal__weather-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: var(--space-xs);
+    }
+
+    .calendar-activity-modal__actions {
+        justify-content: stretch;
+    }
+
+    .calendar-activity-modal__activities-button {
+        width: 100%;
+    }
+
+    .calendar-activity-modal__weather-grid>div {
+        padding: 8px 4px;
+    }
+
+    .calendar-activity-modal__weather-grid span {
+        font-size: 0.68rem;
+    }
+
+    .calendar-activity-modal__weather-grid strong {
+        font-size: 0.8rem;
+    }
+
+}
+
+@media (max-width: 425px) {
+
+    .calendar {
+        padding: 12px;
+    }
+
+    .calendar-sidebar {
+        grid-template-columns: 1fr;
+        order: 3;
+    }
+
+    .calendar-planning {
+        width: 100%;
+        margin-bottom: var(--space-sm);
+    }
+
+    .calendar-layout {
+        width: 100%;
+    }
+
+    .calendar__day {
+        height: 55px;
+        min-height: 55px;
+    }
+
+    .calendar__mobile-count {
+        top: 65%;
+    }
+
+    .calendar__toolbar button {
+        border-radius: 25%;
+    }
+}
+
+/* ==========================================================================
+   Calendar - final responsive layout
+   ========================================================================== */
+
+.calendar-page {
+    min-width: 0;
+    max-width: 100%;
+    box-sizing: border-box;
+
+    padding-top: 28px;
+}
+
+.calendar-content {
+    display: grid;
+    grid-template-columns: minmax(0, 700px) minmax(250px, 280px);
+    grid-template-areas:
+        "header ."
+        "planning ."
+        "calendar sidebar";
+
+    column-gap: 24px;
+    row-gap: 10px;
+
+    width: min(100%, 1004px);
+    min-width: 0;
+
+    margin: 0 auto;
+}
+
+.calendar-header {
+    grid-area: header;
+    min-width: 0;
+}
+
+.calendar-header h1 {
+    margin: 0;
+}
+
+.calendar-planning {
+    grid-area: planning;
+
+    width: 100%;
+    min-width: 0;
+
+    margin: 0;
+
+    text-align: center;
+}
+
+.calendar-layout {
+    grid-area: calendar;
+
+    width: 100%;
+    max-width: 700px;
+    min-width: 0;
+
+    margin: 0;
+}
+
+.calendar {
+    width: 100%;
+    max-width: 700px;
+    min-width: 0;
+
+    box-sizing: border-box;
+}
+
+.calendar-sidebar {
+    grid-area: sidebar;
+
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+
+    align-content: start;
+
+    width: 100%;
+    max-width: 280px;
+    min-width: 0;
+
+    gap: 16px;
+
+    align-self: start;
+}
+
+/* Mantém os elementos internos flexíveis */
+.calendar-summary,
+.calendar-upcoming,
+.calendar-summary__stats,
+.calendar-upcoming__list,
+.calendar-upcoming__item,
+.calendar-upcoming__content {
+    min-width: 0;
+    max-width: 100%;
+
+    box-sizing: border-box;
+}
+
+
+/* ==========================================================================
+   Grelha principal do calendário
+   ========================================================================== */
+
+.calendar__weekdays,
+.calendar__grid {
+    width: 100%;
+    min-width: 0;
+
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+}
+
+/*
+ * Células quadradas.
+ * A largura vem da grelha e a altura acompanha automaticamente.
+ */
+.calendar__day {
+    position: relative;
+
+    min-width: 0;
+    height: auto;
+    min-height: 0;
+
+    aspect-ratio: 1 / 1;
+}
+
+/*
+ * Em desktop/tablet mostramos:
+ * - máximo 2 atividades;
+ * - depois "+ N atividade(s)".
+ */
+.calendar__day-activities {
+    display: flex;
+}
+
+
+
+.calendar__activity-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    flex: 0 0 auto;
+
+    margin-right: 3px;
+
+    font-size: 1rem;
+    line-height: 1;
+}
+
+.calendar-summary__label {
+    display: inline-flex;
+    align-items: center;
+
+    min-width: 0;
+
+    gap: 5px;
+}
+
+.calendar-summary__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    flex: 0 0 auto;
+
+    margin-right: -4px;
+
+    font-size: 1rem;
+    line-height: 1;
+}
+
+.calendar-upcoming__content .calendar-upcoming__type {
+    display: inline-flex;
+    align-items: center;
+
+    width: auto;
+    max-width: 100%;
+    min-width: 0;
+
+    margin-top: 3px;
+
+    gap: 6px;
+
+    white-space: nowrap;
+    opacity: 1;
+}
+
+.calendar-upcoming__type-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    flex: 0 0 auto;
+
+    font-size: 1rem;
+    line-height: 1;
+
+    opacity: 1;
+    filter: none;
+}
+
+/* ==========================================================================
+   Desktop grande - 1440px ou superior
+   ========================================================================== */
+@media (min-width: 1400px) {
+
+    /*
+   * O conjunto calendário + sidebar passa a usar aproximadamente
+   * a mesma largura útil do conteúdo do header.
+   *
+   * 820px calendário
+   * 24px espaço
+   * 356px sidebar
+   * ----------------
+   * 1200px total
+   */
+    .calendar-content {
+        grid-template-columns: minmax(0, 820px) minmax(0, 356px);
+
+        width: min(100%, 1200px);
+        max-width: 1200px;
+
+        column-gap: 24px;
+
+        margin-inline: auto;
+    }
+
+    /*
+   * Calendário maior horizontalmente.
+   */
+    .calendar-layout,
+    .calendar {
+        width: 100%;
+        max-width: 820px;
+    }
+
+    /*
+   * Sidebar acompanha a nova largura.
+   */
+    .calendar-sidebar {
+        width: 100%;
+        max-width: 356px;
+
+        height: 100%;
+
+        grid-template-rows: auto minmax(0, 1fr);
+
+        align-self: stretch;
+        align-content: stretch;
+    }
+
+    /*
+   * Mais altura útil para:
+   * número do dia
+   * atividade 1
+   * atividade 2
+   * + X atividade(s)
+   */
+    .calendar__day {
+        height: 96px;
+        min-height: 96px;
+
+        aspect-ratio: auto;
+
+        overflow: hidden;
+    }
+
+    .calendar__day-activities {
+        display: flex;
+        flex-direction: column;
+
+        gap: 2px;
+
+        min-width: 0;
+    }
+
+    .calendar__activity {
+        min-width: 0;
+        max-width: 100%;
+        padding-inline: 5px;
+
+        overflow: hidden;
+    }
+
+    /*
+   * O indicador fica sempre dentro da célula.
+   */
+    .calendar__more {
+        display: block;
+
+        width: 100%;
+        max-width: 100%;
+
+        margin-top: 10px;
+
+        font-size: 0.62rem;
+        font-weight: 700;
+        line-height: 1;
+
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    /*
+   * Resumo mais largo e compacto.
+   */
+    .calendar-summary {
+        width: 100%;
+
+        padding: 18px 20px;
+    }
+
+    .calendar-summary h2 {
+        margin-bottom: 14px;
+    }
+
+    /*
+   * Todos os quatro indicadores numa única linha.
+   */
+    .calendar-summary__stats {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+
+        gap: 6px;
+    }
+
+    .calendar-summary__stats>div {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        min-width: 0;
+
+        padding: 20px 5px;
+    }
+
+    .calendar-summary__stats span {
+        min-width: 0;
+
+        font-size: 0.8rem;
+        line-height: 1;
+
+        white-space: nowrap;
+    }
+
+    .calendar-summary__stats strong {
+        margin-left: 4px;
+
+        font-size: 0.78rem;
+        line-height: 1;
+
+        white-space: nowrap;
+    }
+
+    /*
+   * Próximas atividades usa todo o restante
+   * da altura disponível.
+   */
+    .calendar-upcoming {
+        width: 100%;
+
+        min-height: 0;
+        height: 100%;
+    }
+}
+
+/* ==========================================================================
+   Notebook - 901px até 1100px
+   ========================================================================== */
+
+@media (min-width: 901px) and (max-width: 1100px) {
+    .calendar-page {
+        padding-top: 22px;
+    }
+
+    /*
+   * Mesmo layout do desktop grande:
+   * calendário à esquerda e sidebar à direita.
+   */
+    .calendar-content {
+        grid-template-columns: minmax(0, 1fr) 250px;
+        grid-template-areas:
+            "header ."
+            "planning ."
+            "calendar sidebar";
+
+        width: min(100%, 960px);
+        max-width: 960px;
+
+        column-gap: 16px;
+        row-gap: 10px;
+
+        margin-inline: auto;
+    }
+
+    .calendar-header h1 {
+        font-size: 1.9rem;
+    }
+
+    .calendar-layout,
+    .calendar {
+        width: 100%;
+        max-width: none;
+    }
+
+    /*
+   * Sidebar alinhada exatamente à altura do calendário.
+   */
+    .calendar-sidebar {
+        width: 100%;
+        max-width: 250px;
+
+        height: 100%;
+
+        grid-template-rows: auto minmax(0, 1fr);
+
+        align-self: stretch;
+        align-content: stretch;
+
+        gap: 12px;
+    }
+
+    /*
+   * Resumo mais compacto.
+   */
+    .calendar-summary,
+    .calendar-upcoming {
+        padding: 14px;
+    }
+
+    .calendar-summary h2,
+    .calendar-upcoming h2 {
+        margin-bottom: 10px;
+
+        font-size: 1.05rem;
+    }
+
+    /*
+   * Resumo em 2 colunas × 2 linhas.
+   *
+   * Total       Planeadas
+   * Concluídas  Canceladas
+   */
+    .calendar-summary__stats {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+
+        gap: 6px;
+    }
+
+    .calendar-summary__stats>div {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+
+        min-width: 0;
+
+        padding: 10px 7px;
+    }
+
+    .calendar-summary__stats span {
+        min-width: 0;
+
+        font-size: 0.75rem;
+        line-height: 1;
+
+        white-space: nowrap;
+    }
+
+    .calendar-summary__stats strong {
+        margin-left: 3px;
+
+        font-size: 0.82rem;
+        line-height: 1;
+    }
+
+    /*
+   * Próximas atividades usa o restante da altura,
+   * mantendo o fundo alinhado ao calendário.
+   */
+    .calendar-upcoming {
+        min-height: 0;
+        height: 100%;
+    }
+
+    .calendar-upcoming__item {
+        padding: 7px;
+    }
+
+    .calendar-upcoming__content strong {
+        font-size: 0.82rem;
+    }
+
+    .calendar-upcoming__content span,
+    .calendar-upcoming__datetime {
+        font-size: 0.7rem;
+    }
+
+    /*
+   * Células com altura suficiente para:
+   * número + 2 atividades + indicador adicional.
+   */
+    .calendar__day {
+        position: relative;
+
+        height: 88px;
+        min-height: 88px;
+
+        aspect-ratio: auto;
+
+        padding-bottom: 18px;
+
+        overflow: hidden;
+    }
+
+    .calendar__activity {
+        min-width: 0;
+        max-width: 100%;
+
+        padding-inline: 4px;
+
+        font-size: 0.61rem;
+
+        overflow: hidden;
+    }
+
+    /*
+   * + X atividade(s) fica ancorado dentro da célula.
+   * Assim ele nunca atravessa a borda inferior.
+   */
+    .calendar__more {
+        position: absolute;
+
+        left: 5px;
+        right: 5px;
+        bottom: 4px;
+
+
+
+        display: block;
+
+        width: auto;
+        max-width: none;
+
+        margin: 6px;
+
+        font-size: 0.58rem;
+        font-weight: 700;
+        line-height: 1;
+
+        text-align: center;
+
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+}
+
+
+/* ==========================================================================
+   Tablet - 426px até 900px
+   ========================================================================== */
+
+@media (min-width: 426px) and (max-width: 900px) {
+    .calendar-page {
+        padding-top: 22px;
+    }
+
+    /*
+   * Estrutura:
+   *
+   * Calendário
+   *
+   * Resumo do mês | Próximas atividades
+   *
+   *       PLANEAMENTO
+   *
+   *       Calendário
+   */
+    .calendar-content {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+
+        grid-template-areas:
+            "header header"
+            "summary upcoming"
+            "planning planning"
+            "calendar calendar";
+
+        column-gap: 12px;
+        row-gap: 16px;
+
+        width: 100%;
+        max-width: none;
+    }
+
+    /*
+   * A sidebar deixa os seus dois cards participarem
+   * diretamente da grelha principal.
+   */
+    .calendar-sidebar {
+        display: contents;
+    }
+
+    /*
+   * Título ocupa toda a largura.
+   */
+    .calendar-header {
+        display: block;
+
+        width: 100%;
+        min-width: 0;
+    }
+
+    .calendar-header h1 {
+        margin: 0;
+
+        font-size: 1.65rem;
+        line-height: 1.15;
+    }
+
+    /*
+   * Cards superiores.
+   */
+    .calendar-summary {
+        grid-area: summary;
+    }
+
+    .calendar-upcoming {
+        grid-area: upcoming;
+    }
+
+    .calendar-summary,
+    .calendar-upcoming {
+        width: 100%;
+        min-width: 0;
+        height: 100%;
+
+        padding: 12px;
+
+        align-self: stretch;
+    }
+
+    .calendar-summary h2,
+    .calendar-upcoming h2 {
+        margin-bottom: 10px;
+
+        font-size: 1.2rem;
+    }
+
+    /*
+   * Resumo em duas colunas.
+   *
+   * Total       Planeadas
+   * Concluídas  Canceladas
+   */
+    .calendar-summary__stats {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+
+        gap: 6px;
+    }
+
+    .calendar-summary__stats>div {
+        min-width: 0;
+
+        padding: 15px 8px;
+    }
+
+    .calendar-summary__label {
+        gap: 10px;
+    }
+
+    .calendar-summary__icon {
+        font-size: 0.9rem;
+    }
+
+    .calendar-summary__stats span {
+        font-size: 0.95rem;
+    }
+
+    .calendar-summary__stats strong {
+        font-size: 0.82rem;
+    }
+
+    /*
+   * Próximas atividades:
+   * mostrar no máximo as duas primeiras.
+   */
+    .calendar-upcoming__list {
+        gap: 6px;
+    }
+
+    .calendar-upcoming__item {
+        min-width: 0;
+
+        padding: 7px 8px;
+    }
+
+    .calendar-upcoming__item:nth-child(n + 3) {
+        display: none;
+    }
+
+    .calendar-upcoming__content strong {
+        font-size: 0.78rem;
+    }
+
+    .calendar-upcoming__content .calendar-upcoming__type {
+        display: inline-flex;
+        align-items: center;
+
+        gap: 5px;
+
+        font-size: 0.7rem;
+    }
+
+    .calendar-upcoming__type-icon {
+        font-size: 0.9rem;
+    }
+
+    .calendar-upcoming__datetime {
+        font-size: 0.68rem;
+    }
+
+    /*
+   * Só aparece se houver mais de duas atividades.
+   */
+    .calendar-upcoming__more {
+        display: block;
+
+        margin: 8px 0 0;
+
+        padding: 7px 8px;
+
+        border-radius: 8px;
+
+        background: var(--color-surface-subtle);
+
+        color: var(--color-primary);
+
+        font-size: 0.72rem;
+        font-weight: 700;
+
+        text-align: center;
+    }
+
+    /*
+   * Distância entre os cards superiores e o calendário.
+   */
+    .calendar-planning {
+        width: 100%;
+
+        margin-top: 10px;
+
+        text-align: center;
+    }
+
+    /*
+   * Calendário centralizado e menor.
+   */
+    .calendar-layout {
+        width: min(100%, 700px);
+        max-width: 700px;
+
+        margin: 0 auto;
+    }
+
+    .calendar {
+        width: 100%;
+        max-width: 700px;
+    }
+
+    /*
+   * Mantemos espaço para:
+   * ícone + horário
+   * duas atividades
+   * + N atividade(s)
+   */
+    .calendar__day {
+        position: relative;
+
+        height: 80px;
+        min-height: 80px;
+
+        aspect-ratio: auto;
+
+        padding-bottom: 17px;
+
+        overflow: hidden;
+    }
+
+    .calendar__activity {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        gap: 3px;
+
+        min-width: 0;
+        max-width: 100%;
+
+        font-size: 0.6rem;
+
+        text-align: center;
+    }
+
+    .calendar__activity-icon {
+        margin: 0;
+
+        font-size: 0.86rem;
+    }
+
+    .calendar__more {
+        position: absolute;
+
+        left: 4px;
+        right: 4px;
+        bottom: 4px;
+
+        display: block;
+
+        width: auto;
+
+        margin: 0;
+
+        font-size: 0.57rem;
+        font-weight: 700;
+        line-height: 1;
+
+        text-align: center;
+
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .eyebrow {
+        font-size: 0.65rem !important;
+
+    }
+}
+
+
+/* ==========================================================================
+   Mobile - até 425px
+   ========================================================================== */
+
+@media (max-width: 425px) {
+    .calendar-page {
+        padding-top: 18px;
+    }
+
+    /*
+   * Estrutura pedida no telemóvel:
+   *
+   *             Calendário
+   *
+   * Resumo do mês
+   * [Total] [Planeadas] [Concluídas] [Canceladas]
+   *
+   * Próximas atividades
+   * [atividade]
+   *
+   *            PLANEAMENTO
+   *
+   *             calendário
+   */
+    .calendar-content {
+        grid-template-columns: minmax(0, 1fr);
+
+        grid-template-areas:
+            "header"
+            "summary"
+            "upcoming"
+            "planning"
+            "calendar";
+
+        gap: 10px;
+
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+    }
+
+    /*
+   * Assim como no tablet, summary e upcoming passam
+   * a participar diretamente do grid principal.
+   */
+    .calendar-sidebar {
+        display: contents;
+    }
+
+    .calendar-header {
+        display: block;
+
+        width: 100%;
+
+        text-align: center;
+    }
+
+    .calendar-header h1 {
+        margin: 0;
+
+        font-size: 1.45rem;
+        line-height: 1.2;
+    }
+
+    .calendar-summary {
+        grid-area: summary;
+    }
+
+    .calendar-upcoming {
+        grid-area: upcoming;
+    }
+
+    /*
+   * Cards mobile muito mais compactos.
+   */
+    .calendar-summary,
+    .calendar-upcoming {
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+
+        padding: 8px;
+    }
+
+    .calendar-summary h2,
+    .calendar-upcoming h2 {
+        margin-bottom: 6px;
+
+        font-size: 0.85rem;
+    }
+
+    /*
+   * Quatro indicadores numa única linha.
+   */
+    .calendar-summary__stats {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+
+        gap: 4px;
+    }
+
+    .calendar-summary__stats>div {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+
+        min-width: 0;
+
+        padding: 7px 2px;
+    }
+
+    .calendar-summary__stats span {
+        font-size: 0.58rem;
+        line-height: 1.1;
+
+        text-align: center;
+
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+
+        max-width: 100%;
+    }
+
+    .calendar-summary__stats strong {
+        margin-top: 2px;
+
+        font-size: 0.78rem;
+    }
+
+    /*
+   * Próximas atividades como faixa compacta.
+   */
+    .calendar-upcoming__list {
+        gap: 4px;
+    }
+
+    .calendar-upcoming__item {
+        min-width: 0;
+
+        padding: 6px 8px;
+    }
+
+    .calendar-upcoming__content {
+        min-width: 0;
+    }
+
+    .calendar-upcoming__content strong,
+    .calendar-upcoming__content span {
+        display: block;
+
+        max-width: 100%;
+
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .calendar-planning {
+        width: 100%;
+
+        margin-top: 4px;
+
+        text-align: center;
+    }
+
+    .calendar-layout {
+        width: 100%;
+        max-width: 100%;
+
+        margin: 0;
+    }
+
+    .calendar {
+        width: 100%;
+        max-width: 100%;
+
+        padding: 10px;
+    }
+
+    /*
+   * Comportamento mobile aprovado:
+   * altura fixa de 55px.
+   */
+    .calendar__day {
+        position: relative;
+
+        min-width: 0;
+
+        height: 55px;
+        min-height: 55px;
+
+        aspect-ratio: auto;
+
+        padding: 5px;
+    }
+
+    /*
+   * Esconde as barras das atividades no telemóvel.
+   */
+    .calendar__day-activities {
+        display: none;
+    }
+
+    .calendar__more {
+        display: none;
+    }
+
+    /*
+   * Mantém apenas o círculo azul com a quantidade.
+   */
+    .calendar__mobile-count {
+        position: absolute;
+
+        left: 50%;
+        top: 65%;
+
+        transform: translate(-50%, -50%);
+
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+
+        min-width: 22px;
+        height: 22px;
+
+        padding: 0 5px;
+
+        border-radius: 999px;
+
+        background: var(--color-primary);
+        color: #fff;
+
+        font-size: 0.7rem;
+        font-weight: 700;
+        line-height: 1;
+    }
+
+    .calendar-summary {
+        text-align: center;
+    }
+
+    .calendar-summary > h2 {
+        font-size: 1.1rem;
+    }
+
+    .calendar-summary__stat--total > .calendar-summary__label,
+    .calendar-summary__stat--planned > .calendar-summary__label,
+    .calendar-summary__stat--completed > .calendar-summary__label,
+    .calendar-summary__stat--cancelled > .calendar-summary__label{
+        font-size: 0.8rem;
+    }
+    
+    .calendar-summary__label > .calendar-summary__icon {
+        font-size: 0.75rem;
+    }
+
+    .calendar-upcoming {
+        text-align: center;
+    }
+
+    .calendar-upcoming__header > h2 {
+        font-size: 1.1rem;
+    }
+
+    span.eyebrow {
+        font-size: 0.65rem;
+    }
+
+}
+
+
+/* ==========================================================================
+   Telefones muito estreitos
+   ========================================================================== */
+
+@media (min-width: 426px) {
+    .calendar__day {
+        overflow: visible;
+    }
+
+    .calendar__day-activities {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+    }
+
+    .calendar__more {
+        display: block;
+
+        font-size: 0.62rem;
+        font-weight: 700;
+        line-height: 1;
+
+        white-space: nowrap;
+
+        overflow: visible;
+        text-overflow: clip;
+    }
+    
+}
+
+@media (max-width: 375px) {
+
+    .calendar-summary {
+        text-align: center;
+    }
+
+    .calendar-summary > h2 {
+        font-size: 1.2rem;
+    }
+    .calendar-summary__stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .calendar-summary__stat--total > .calendar-summary__label,
+    .calendar-summary__stat--planned > .calendar-summary__label,
+    .calendar-summary__stat--completed > .calendar-summary__label,
+    .calendar-summary__stat--cancelled > .calendar-summary__label{
+        font-size: 0.85rem;
+    }
+
+    .calendar-summary__label > .calendar-summary__icon {
+        font-size: 0.9rem;
+    }
+
+    .calendar-upcoming {
+        text-align: center;
+    }
+
+    .calendar-upcoming__header > h2 {
+        font-size: 1.2rem;
+    }
+    .site-header__nav-button {
+        padding: 0 var(--space-sm);
+        font-size: 0.7rem;
+        white-space: nowrap;
+    }
+
+    h2 {
+        font-size: 1.3rem;
+        text-align: center;
+    }
+
+    span.eyebrow {
+        font-size: 0.6rem;
+    }
+
+    .calendar__toolbar {
+        margin-bottom: 10px;
+    }
+    .calendar__toolbar > button {
+        margin-top: 5px;
+        width: 30px;
+        height: 30px;
+    }
+
+    .calendar__weekdays {
+        font-size: 0.8rem;
+    }
+
+}

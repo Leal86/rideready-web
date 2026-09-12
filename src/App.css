@@ -10,7 +10,7 @@
 .app-content {
   width: min(100% - 32px, var(--content-max-width));
   margin: 0 auto;
-  padding: var(--space-xl) 0;
+  padding: var(--space-md) 0;
 }
 
 
@@ -1099,9 +1099,51 @@
   cursor: pointer;
 }
 
+
+
+.activity-focus {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-lg);
+
+  margin-bottom: var(--space-lg);
+  padding: var(--space-md) var(--space-lg);
+
+  border: 1px solid var(--color-border);
+  border-left: 4px solid var(--color-primary);
+  border-radius: var(--radius-medium);
+
+  background: var(--color-surface);
+}
+
+.activity-focus p {
+  margin: var(--space-xs) 0 0;
+}
+
+.activity-focus button {
+  flex-shrink: 0;
+
+  min-height: 40px;
+  padding: 0 var(--space-md);
+
+  border: none;
+  border-radius: var(--radius-medium);
+
+  background: var(--color-primary);
+  color: #ffffff;
+
+  font: inherit;
+  font-weight: 600;
+
+  cursor: pointer;
+}
+
 /* ==========================================================================
    13. Responsividade
    ========================================================================== */
+
+
 
 @media (max-width: 1050px) {
   .activity-list {
@@ -1258,8 +1300,6 @@
   }
 }
 
-@media (min-width: 521px) and (max-width: 900px) {}
-
 @media (max-width: 720px) {
   .site-header__content {
     flex-direction: column;
@@ -1407,6 +1447,15 @@
     bottom: var(--space-md);
     width: 44px;
     height: 44px;
+  }
+
+  .activity-focus {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .activity-focus button {
+    width: 100%;
   }
 
 }

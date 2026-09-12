@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import Header from './components/Header'
 import ActivitiesPage from './pages/ActivitiesPage'
 import DashboardPage from './pages/DashboardPage'
+import CalendarPage from './pages/CalendarPage'
 import './App.css'
 
 
@@ -53,6 +54,16 @@ function App() {
     setActiveSection(section)
   }
 
+  function handleOpenActivity(activityId) {
+    window.history.pushState(
+      {},
+      '',
+      `/activities?activity=${activityId}`,
+    )
+
+    setActiveSection('activities')
+  }
+
   return (
     <div className="app">
       <Header
@@ -60,20 +71,20 @@ function App() {
         onSectionChange={handleSectionChange}
       />
 
-      {activeSection === 'activities' && <ActivitiesPage />}
+      {activeSection === 'activities' && (
+        <ActivitiesPage
+          key={`${window.location.pathname}${window.location.search}`}
+        />
+      )}
 
       {activeSection === 'dashboard' && <DashboardPage />}
 
       {activeSection === 'calendar' && (
-        <main className="app-content">
-          <section>
-            <h1>Calendário</h1>
-            <p>
-              Consulte as suas atividades organizadas por data.
-            </p>
-          </section>
-        </main>
+        <CalendarPage
+          onOpenActivity={handleOpenActivity}
+        />
       )}
+
     </div>
   )
 }

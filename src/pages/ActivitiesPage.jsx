@@ -1,4 +1,8 @@
-import { useEffect, useState } from 'react'
+import {
+  useEffect,
+  useRef,
+  useState,
+} from 'react'
 
 import ActivityForm from '../components/ActivityForm'
 import ActivityList from '../components/ActivityList'
@@ -10,6 +14,7 @@ function buildWeatherSnapshot(activity) {
   if (!activity.weather_checked_at) {
     return null
   }
+
 
   return {
     available: true,
@@ -51,6 +56,15 @@ function ActivitiesPage() {
   const [selectedActivityIds, setSelectedActivityIds] = useState([])
   const [isBulkSelectionMode, setIsBulkSelectionMode] = useState(false)
   const [isBulkDeleting, setIsBulkDeleting] = useState(false)
+
+  const params = new URLSearchParams(window.location.search)
+  const activityParam = params.get('activity')
+
+  const focusedActivityId = activityParam
+    ? Number(activityParam)
+    : null
+
+  const activityListRef = useRef(null)
 
   useEffect(() => {
     async function loadActivities() {
@@ -95,6 +109,35 @@ function ActivitiesPage() {
       window.removeEventListener('scroll', handleScroll)
     }
   }, [])
+
+  useEffect(() => {
+    if (
+      isLoading ||
+      focusedActivityId === null ||
+      activities.length === 0
+    ) {
+      return
+    }
+
+    const focusedActivityExists = activities.some(
+      (activity) => activity.id === focusedActivityId,
+    )
+
+    if (!focusedActivityExists) {
+      return
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      activityListRef.current?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start',
+      })
+    }, 100)
+
+    return () => {
+      window.clearTimeout(timeoutId)
+    }
+  }, [activities, focusedActivityId, isLoading])
 
   async function loadWeatherForActivity(activityId) {
     try {
@@ -473,6 +516,12 @@ function ActivitiesPage() {
   }
 
   const filteredActivities = activities.filter((activity) => {
+    if (
+      focusedActivityId !== null &&
+      activity.id !== focusedActivityId
+    ) {
+      return false
+    }
     const normalizedSearch = searchTerm.trim().toLowerCase()
 
     const matchesSearch =
@@ -527,12 +576,29 @@ function ActivitiesPage() {
   })
 
   const hasActiveFilters =
+    focusedActivityId !== null ||
     searchTerm.trim() !== '' ||
     statusFilter !== 'ALL' ||
     typeFilter !== 'ALL' ||
     dateFilter !== 'ALL'
 
+  function clearFocusedActivity() {
+    if (focusedActivityId === null) {
+      return
+    }
+
+    window.history.replaceState(
+      {},
+      '',
+      '/activities',
+    )
+
+    window.dispatchEvent(new PopStateEvent('popstate'))
+  }
+
   function handleClearFilters() {
+    clearFocusedActivity()
+
     setSearchTerm('')
     setStatusFilter('ALL')
     setTypeFilter('ALL')
@@ -600,15 +666,48 @@ function ActivitiesPage() {
         onCancelEdit={handleCancelEdit}
       />
 
+      {focusedActivityId !== null && (
+        <section className="activity-focus">
+          <div>
+            <span className="eyebrow">
+              Atividade selecionada
+            </span>
+
+            <p>
+              Está a visualizar a atividade aberta através do calendário.
+            </p>
+          </div>
+
+          <button
+            type="button"
+            onClick={clearFocusedActivity}
+          >
+            Ver todas as atividades
+          </button>
+        </section>
+      )}
+
       <ActivityFilters
         searchTerm={searchTerm}
-        onSearchChange={setSearchTerm}
+        onSearchChange={(value) => {
+          clearFocusedActivity()
+          setSearchTerm(value)
+        }}
         statusFilter={statusFilter}
-        onStatusChange={setStatusFilter}
+        onStatusChange={(value) => {
+          clearFocusedActivity()
+          setStatusFilter(value)
+        }}
         typeFilter={typeFilter}
-        onTypeChange={setTypeFilter}
+        onTypeChange={(value) => {
+          clearFocusedActivity()
+          setTypeFilter(value)
+        }}
         dateFilter={dateFilter}
-        onDateChange={setDateFilter}
+        onDateChange={(value) => {
+          clearFocusedActivity()
+          setDateFilter(value)
+        }}
         resultCount={filteredActivities.length}
         hasActiveFilters={hasActiveFilters}
         onClearFilters={handleClearFilters}
@@ -627,28 +726,30 @@ function ActivitiesPage() {
       )}
 
       {!isLoading && !error && (
-        <ActivityList
-          activities={filteredActivities}
-          hasActiveFilters={hasActiveFilters}
-          isBulkSelectionMode={isBulkSelectionMode}
-          selectedActivityIds={selectedActivityIds}
-          onStartBulkSelection={handleStartBulkSelection}
-          onToggleActivitySelection={handleToggleActivitySelection}
-          onCancelBulkSelection={handleCancelBulkSelection}
-          onDeleteSelectedActivities={handleDeleteSelectedActivities}
-          isBulkDeleting={isBulkDeleting}
-          onSelectAllVisible={handleSelectAllVisibleActivities}
-          onClearSelected={handleClearSelectedActivities}
-          onEdit={handleEditActivity}
-          onDelete={handleDeleteActivity}
-          isPastPlannedActivity={isPastPlannedActivity}
-          onComplete={handleCompleteActivity}
-          onCancelPast={handleCancelPastActivity}
-          weatherByActivity={weatherByActivity}
-          weatherLoadingByActivity={weatherLoadingByActivity}
-          weatherErrorByActivity={weatherErrorByActivity}
-          onRefreshWeather={loadWeatherForActivity}
-        />
+        <div ref={activityListRef}>
+          <ActivityList
+            activities={filteredActivities}
+            hasActiveFilters={hasActiveFilters}
+            isBulkSelectionMode={isBulkSelectionMode}
+            selectedActivityIds={selectedActivityIds}
+            onStartBulkSelection={handleStartBulkSelection}
+            onToggleActivitySelection={handleToggleActivitySelection}
+            onCancelBulkSelection={handleCancelBulkSelection}
+            onDeleteSelectedActivities={handleDeleteSelectedActivities}
+            isBulkDeleting={isBulkDeleting}
+            onSelectAllVisible={handleSelectAllVisibleActivities}
+            onClearSelected={handleClearSelectedActivities}
+            onEdit={handleEditActivity}
+            onDelete={handleDeleteActivity}
+            isPastPlannedActivity={isPastPlannedActivity}
+            onComplete={handleCompleteActivity}
+            onCancelPast={handleCancelPastActivity}
+            weatherByActivity={weatherByActivity}
+            weatherLoadingByActivity={weatherLoadingByActivity}
+            weatherErrorByActivity={weatherErrorByActivity}
+            onRefreshWeather={loadWeatherForActivity}
+          />
+        </div>
       )}
 
       {showScrollTop && (

@@ -105,11 +105,11 @@ function ActivityForm({
             value={formData.activity_type}
             onChange={handleChange}
           >
-            <option value="WALKING">Caminhada</option>
-            <option value="RUNNING">Corrida</option>
-            <option value="CYCLING">Ciclismo</option>
-            <option value="HIKING">Trilho</option>
-            <option value="OTHER">Outra</option>
+            <option value="WALKING">🚶 Caminhada</option>
+            <option value="RUNNING">🏃 Corrida</option>
+            <option value="CYCLING">🚴 Ciclismo</option>
+            <option value="HIKING">🥾 Trilho</option>
+            <option value="OTHER">🏋️ Outra</option>
           </select>
         </div>
 

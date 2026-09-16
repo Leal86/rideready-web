@@ -507,6 +507,34 @@
     box-shadow: 0 18px 50px rgba(15, 42, 52, 0.2);
 }
 
+.calendar-activity-modal__content--planned {
+    border-top: 5px solid #2563eb;
+}
+
+.calendar-activity-modal__content--completed {
+    border-top: 5px solid #16a34a;
+}
+
+.calendar-activity-modal__content--cancelled {
+    border-top: 5px solid #dc2626;
+}
+
+.calendar-activity-modal__status {
+    font-weight: 700;
+}
+
+.calendar-activity-modal__status--planned {
+    color: #2563eb;
+}
+
+.calendar-activity-modal__status--completed {
+    color: #16a34a;
+}
+
+.calendar-activity-modal__status--cancelled {
+    color: #dc2626;
+}
+
 .calendar-activity-modal__content h2 {
     margin-top: var(--space-sm);
     margin-bottom: var(--space-lg);
@@ -522,8 +550,8 @@
     align-items: center;
     justify-content: center;
 
-    width: 36px;
-    height: 36px;
+    width: 34px;
+    height: 34px;
     padding: 0;
 
     border: none;
@@ -536,6 +564,11 @@
     line-height: 1;
 
     cursor: pointer;
+}
+
+.calendar-activity-modal__close svg {
+    width: 1.5rem;
+    height: 1.5rem;
 }
 
 .calendar-activity-modal__details {
@@ -634,14 +667,50 @@
     line-height: 1.5;
 }
 
+.calendar-activity-modal__weather-error {
+    margin: var(--space-md) 0 0;
+
+    font-size: 0.85rem;
+    line-height: 1.5;
+}
+
+.calendar-activity-modal__weather-button {
+    flex: 1 1 0;
+    max-width: 220px;
+
+    min-height: 40px;
+    padding: 0 var(--space-lg);
+
+    border: 1px solid var(--color-primary);
+    border-radius: var(--radius-medium);
+
+    background: transparent;
+    color: var(--color-primary);
+
+    font: inherit;
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+.calendar-activity-modal__weather-button:disabled {
+    cursor: wait;
+    opacity: 0.6;
+}
+
 .calendar-activity-modal__actions {
     display: flex;
-    justify-content: flex-end;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-md);
 
     margin-top: var(--space-lg);
 }
 
 .calendar-activity-modal__activities-button {
+    flex: 1 1 0;
+    max-width: 220px;
+
     min-height: 42px;
     padding: 0 var(--space-lg);
 
@@ -732,11 +801,17 @@
     }
 
     .calendar-activity-modal__actions {
-        justify-content: stretch;
+        justify-content: center;
+        gap: var(--space-sm);
     }
 
-    .calendar-activity-modal__activities-button {
-        width: 100%;
+    .calendar-activity-modal__activities-button,
+    .calendar-activity-modal__weather-button {
+        flex: 1 1 0;
+        width: auto;
+        max-width: none;
+        padding-left: var(--space-sm);
+        padding-right: var(--space-sm);
     }
 
     .calendar-activity-modal__weather-grid>div {
@@ -784,6 +859,20 @@
 
     .calendar__toolbar button {
         border-radius: 25%;
+    }
+}
+
+@media (max-width: 375px) {
+    .calendar-activity-modal__actions {
+        gap: 6px;
+    }
+
+    .calendar-activity-modal__activities-button,
+    .calendar-activity-modal__weather-button {
+        min-height: 38px;
+        padding-left: 6px;
+        padding-right: 6px;
+        font-size: 0.78rem;
     }
 }
 
@@ -1872,18 +1961,18 @@
         text-align: center;
     }
 
-    .calendar-summary > h2 {
+    .calendar-summary>h2 {
         font-size: 1.1rem;
     }
 
-    .calendar-summary__stat--total > .calendar-summary__label,
-    .calendar-summary__stat--planned > .calendar-summary__label,
-    .calendar-summary__stat--completed > .calendar-summary__label,
-    .calendar-summary__stat--cancelled > .calendar-summary__label{
+    .calendar-summary__stat--total>.calendar-summary__label,
+    .calendar-summary__stat--planned>.calendar-summary__label,
+    .calendar-summary__stat--completed>.calendar-summary__label,
+    .calendar-summary__stat--cancelled>.calendar-summary__label {
         font-size: 0.8rem;
     }
-    
-    .calendar-summary__label > .calendar-summary__icon {
+
+    .calendar-summary__label>.calendar-summary__icon {
         font-size: 0.75rem;
     }
 
@@ -1891,7 +1980,7 @@
         text-align: center;
     }
 
-    .calendar-upcoming__header > h2 {
+    .calendar-upcoming__header>h2 {
         font-size: 1.1rem;
     }
 
@@ -1929,7 +2018,7 @@
         overflow: visible;
         text-overflow: clip;
     }
-    
+
 }
 
 @media (max-width: 375px) {
@@ -1938,21 +2027,22 @@
         text-align: center;
     }
 
-    .calendar-summary > h2 {
+    .calendar-summary>h2 {
         font-size: 1.2rem;
     }
+
     .calendar-summary__stats {
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
-    .calendar-summary__stat--total > .calendar-summary__label,
-    .calendar-summary__stat--planned > .calendar-summary__label,
-    .calendar-summary__stat--completed > .calendar-summary__label,
-    .calendar-summary__stat--cancelled > .calendar-summary__label{
+    .calendar-summary__stat--total>.calendar-summary__label,
+    .calendar-summary__stat--planned>.calendar-summary__label,
+    .calendar-summary__stat--completed>.calendar-summary__label,
+    .calendar-summary__stat--cancelled>.calendar-summary__label {
         font-size: 0.85rem;
     }
 
-    .calendar-summary__label > .calendar-summary__icon {
+    .calendar-summary__label>.calendar-summary__icon {
         font-size: 0.9rem;
     }
 
@@ -1960,9 +2050,10 @@
         text-align: center;
     }
 
-    .calendar-upcoming__header > h2 {
+    .calendar-upcoming__header>h2 {
         font-size: 1.2rem;
     }
+
     .site-header__nav-button {
         padding: 0 var(--space-sm);
         font-size: 0.7rem;
@@ -1981,7 +2072,8 @@
     .calendar__toolbar {
         margin-bottom: 10px;
     }
-    .calendar__toolbar > button {
+
+    .calendar__toolbar>button {
         margin-top: 5px;
         width: 30px;
         height: 30px;

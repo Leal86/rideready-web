@@ -2,10 +2,185 @@ import { useEffect, useState } from 'react'
 
 import api from '../services/api'
 
+const activityTypeLabels = {
+  WALKING: 'Caminhada',
+  RUNNING: 'Corrida',
+  CYCLING: 'Ciclismo',
+  HIKING: 'Trilho',
+  OTHER: 'Outra',
+}
+
+const activityTypeImages = {
+  WALKING: '/activity-images/walking.jpg',
+  RUNNING: '/activity-images/running.jpg',
+  CYCLING: '/activity-images/cycling.jpg',
+  HIKING: '/activity-images/hiking.jpg',
+  OTHER: '/activity-images/other.jpg',
+}
+
+function getWeatherIcon(weatherCode) {
+  if (weatherCode === 0) return '☀️'
+  if (weatherCode === 1 || weatherCode === 2) return '🌤️'
+  if (weatherCode === 3) return '☁️'
+  if (weatherCode === 45 || weatherCode === 48) return '🌫️'
+  if ([51, 53, 55, 56, 57, 61, 63, 65, 66, 67, 80, 81, 82].includes(weatherCode)) {
+    return '🌧️'
+  }
+  if ([71, 73, 75, 77, 85, 86].includes(weatherCode)) return '🌨️'
+  if (weatherCode >= 95) return '⛈️'
+
+  return '🌤️'
+}
+
+function getWeatherDescription(weatherCode) {
+  const descriptions = {
+    0: 'Céu limpo',
+    1: 'Predominantemente limpo',
+    2: 'Parcialmente nublado',
+    3: 'Nublado',
+    45: 'Nevoeiro',
+    48: 'Nevoeiro com geada',
+    51: 'Chuvisco fraco',
+    53: 'Chuvisco moderado',
+    55: 'Chuvisco intenso',
+    56: 'Chuvisco gelado fraco',
+    57: 'Chuvisco gelado intenso',
+    61: 'Chuva fraca',
+    63: 'Chuva moderada',
+    65: 'Chuva forte',
+    66: 'Chuva gelada fraca',
+    67: 'Chuva gelada forte',
+    71: 'Neve fraca',
+    73: 'Neve moderada',
+    75: 'Neve forte',
+    77: 'Grãos de neve',
+    80: 'Aguaceiros fracos',
+    81: 'Aguaceiros moderados',
+    82: 'Aguaceiros fortes',
+    85: 'Aguaceiros de neve fracos',
+    86: 'Aguaceiros de neve fortes',
+    95: 'Trovoada',
+    96: 'Trovoada com granizo',
+    99: 'Trovoada forte com granizo',
+  }
+
+  return descriptions[weatherCode] ?? 'Condições variáveis'
+}
+
 function DashboardPage() {
+  const [currentPosition, setCurrentPosition] = useState(null)
+  const [locationError, setLocationError] = useState(() =>
+    navigator.geolocation
+      ? ''
+      : 'A geolocalização não é suportada neste navegador.',
+  )
+  const [currentWeather, setCurrentWeather] = useState(null)
+  const [isWeatherLoading, setIsWeatherLoading] = useState(false)
+  const [weatherError, setWeatherError] = useState('')
+  const [currentLocation, setCurrentLocation] = useState(null)
   const [activities, setActivities] = useState([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState('')
+
+  useEffect(() => {
+    if (!navigator.geolocation) {
+      return
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        setCurrentPosition({
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude,
+        })
+        setLocationError('')
+      },
+      () => {
+        setLocationError(
+          'Não foi possível obter a sua localização.',
+        )
+      },
+      {
+        enableHighAccuracy: false,
+        timeout: 10000,
+        maximumAge: 300000,
+      },
+    )
+  }, [])
+
+  useEffect(() => {
+    if (!currentPosition) {
+      return
+    }
+
+    let isCancelled = false
+
+    async function loadCurrentWeather() {
+      setIsWeatherLoading(true)
+      setWeatherError('')
+
+      try {
+        const response = await api.get('/weather/current', {
+          params: {
+            latitude: currentPosition.latitude,
+            longitude: currentPosition.longitude,
+          },
+        })
+
+        if (!isCancelled) {
+          setCurrentWeather(response.data)
+        }
+      } catch {
+        if (!isCancelled) {
+          setWeatherError(
+            'Não foi possível obter as condições meteorológicas atuais.',
+          )
+        }
+      } finally {
+        if (!isCancelled) {
+          setIsWeatherLoading(false)
+        }
+      }
+    }
+
+    loadCurrentWeather()
+
+    return () => {
+      isCancelled = true
+    }
+  }, [currentPosition])
+
+  useEffect(() => {
+    if (!currentPosition) return
+
+    let isCancelled = false
+
+    async function loadCurrentLocation() {
+
+      try {
+        const response = await api.get('/locations/reverse', {
+          params: {
+            latitude: currentPosition.latitude,
+            longitude: currentPosition.longitude,
+          },
+        })
+
+        if (!isCancelled) {
+          setCurrentLocation(response.data)
+        }
+      } catch {
+        if (!isCancelled) {
+          setCurrentLocation(null)
+        }
+      }
+    }
+
+    loadCurrentLocation()
+
+    return () => {
+      isCancelled = true
+    }
+  }, [currentPosition])
 
   useEffect(() => {
     async function loadActivities() {
@@ -38,7 +213,7 @@ function DashboardPage() {
     (activity) => activity.status === 'CANCELLED',
   ).length
 
-  const nextActivity = activities
+  const upcomingActivities = activities
     .filter((activity) => {
       if (activity.status !== 'PLANNED') {
         return false
@@ -60,7 +235,13 @@ function DashboardPage() {
       )
 
       return dateA - dateB
-    })[0]
+    })
+    .slice(0, 2)
+
+  function handleOpenActivities() {
+    window.history.pushState({}, '', '/activities')
+    window.dispatchEvent(new PopStateEvent('popstate'))
+  }
 
   return (
     <main className="app-content">
@@ -113,33 +294,187 @@ function DashboardPage() {
             </article>
           </section>
 
-          <section className="dashboard-next">
-            <div>
-              <span className="eyebrow">Próxima atividade</span>
-              <h2>O que vem a seguir</h2>
-            </div>
-
-            {nextActivity ? (
-              <article className="dashboard-next__card">
+          <section className="dashboard-main-grid">
+            <article className="dashboard-weather">
+              <div className="dashboard-panel-header">
                 <div>
-                  <span>{nextActivity.activity_type}</span>
-                  <h3>{nextActivity.title}</h3>
+                  <span className="eyebrow">
+                    Tempo agora na sua localização
+                  </span>
+
+                  <p className="dashboard-weather__location">
+                    <span aria-hidden="true">📍</span>
+                    {currentLocation?.formatted || 'Localização atual'}
+                  </p>
+
                 </div>
 
-                <p>{nextActivity.location_name}</p>
-
-                <p>
-                  {nextActivity.scheduled_date} às{' '}
-                  {nextActivity.scheduled_time.slice(0, 5)}
-                </p>
-              </article>
-            ) : (
-              <div className="dashboard-next__empty">
-                <p>
-                  Não existem atividades planeadas para uma data futura.
-                </p>
               </div>
-            )}
+
+              {currentWeather?.observed_at && (
+                <p className="dashboard-weather__source">
+                  Dados meteorológicos das{' '}
+                  {currentWeather.observed_at.slice(11, 16)}, fornecidos pela{' '}
+                  <a
+                    href="https://open-meteo.com/"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    Open-Meteo
+                  </a>.
+                </p>
+              )}
+
+              <div className="dashboard-weather__content">
+                {locationError && (
+                  <p className="dashboard-weather__message">
+                    {locationError}
+                  </p>
+                )}
+
+                {isWeatherLoading && (
+                  <p className="dashboard-weather__message">
+                    A carregar condições meteorológicas...
+                  </p>
+                )}
+
+                {weatherError && (
+                  <p className="dashboard-weather__message">
+                    {weatherError}
+                  </p>
+                )}
+
+                {currentWeather && !isWeatherLoading && (
+                  <>
+                    <div className="dashboard-weather__current">
+                      <span
+                        className="dashboard-weather__current-icon"
+                        aria-hidden="true"
+                      >
+                        {getWeatherIcon(currentWeather.weather_code)}
+                      </span>
+
+                      <div className="dashboard-weather__current-info">
+                        <strong>
+                          {currentWeather.temperature.toFixed(1)} °C
+                        </strong>
+
+                        <span>
+                          {getWeatherDescription(currentWeather.weather_code)}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="dashboard-weather__metrics">
+                      <div>
+                        <span>Sensação</span>
+                        <strong>
+                          {currentWeather.apparent_temperature.toFixed(1)} °C
+                        </strong>
+                      </div>
+
+                      <div>
+                        <span>Prob. chuva</span>
+                        <strong>
+                          {currentWeather.precipitation_probability}%
+                        </strong>
+                      </div>
+
+                      <div>
+                        <span>Vento</span>
+                        <strong>
+                          {currentWeather.wind_speed.toFixed(1)} km/h
+                        </strong>
+                      </div>
+
+                      <div>
+                        <span>Rajadas</span>
+                        <strong>
+                          {currentWeather.wind_gusts.toFixed(1)} km/h
+                        </strong>
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
+
+              <p className="dashboard-weather__note">
+                ⓘ Condições atuais na sua localização.
+              </p>
+            </article>
+
+            <article className="dashboard-upcoming">
+              <div className="dashboard-upcoming__header">
+                <div>
+                  <span className="eyebrow">
+                    Próximas atividades
+                  </span>
+
+                  <h2>O que vem a seguir</h2>
+                </div>
+
+                <button
+                  type="button"
+                  className="dashboard-upcoming__all-button"
+                  onClick={handleOpenActivities}
+                >
+                  Ver todas as atividades
+                </button>
+              </div>
+
+              {upcomingActivities.length > 0 ? (
+                <div className="dashboard-upcoming__list">
+                  {upcomingActivities.map((activity) => (
+                    <article
+                      key={activity.id}
+                      className="dashboard-upcoming__item"
+                    >
+                      <div className="dashboard-upcoming__image-wrapper">
+                        <img
+                          className="dashboard-upcoming__image"
+                          src={activityTypeImages[activity.activity_type]}
+                          alt=""
+                        />
+                      </div>
+
+                      <div className="dashboard-upcoming__content">
+                        <span>
+                          {activityTypeLabels[activity.activity_type]}
+                        </span>
+
+                        <h3>{activity.title}</h3>
+
+                        <p>
+                          <span aria-hidden="true">📍</span>
+                          {activity.location_name}
+                        </p>
+
+                        <p>
+                          <span aria-hidden="true">📅</span>
+                          {new Date(
+                            `${activity.scheduled_date}T00:00:00`,
+                          ).toLocaleDateString('pt-PT')}{' '}
+                          às {activity.scheduled_time.slice(0, 5)}
+                        </p>
+                      </div>
+
+                      <span
+                        className="dashboard-upcoming__arrow"
+                        aria-hidden="true"
+                      >
+                        ›
+                      </span>
+                    </article>
+                  ))}
+                </div>
+              ) : (
+                <div className="dashboard-next__empty">
+                  <p>
+                    Não existem atividades planeadas para uma data futura.
+                  </p>
+                </div>
+              )}
+            </article>
           </section>
         </>
       )}

@@ -57,14 +57,32 @@ function ActivitiesPage() {
   const [isBulkSelectionMode, setIsBulkSelectionMode] = useState(false)
   const [isBulkDeleting, setIsBulkDeleting] = useState(false)
 
-  const params = new URLSearchParams(window.location.search)
-  const activityParam = params.get('activity')
+  const getFocusedActivityId = () => {
+    const params = new URLSearchParams(window.location.search)
+    const activityParam = params.get('activity')
 
-  const focusedActivityId = activityParam
-    ? Number(activityParam)
-    : null
+    return activityParam
+      ? Number(activityParam)
+      : null
+  }
+
+  const [focusedActivityId, setFocusedActivityId] = useState(
+    getFocusedActivityId,
+  )
 
   const activityListRef = useRef(null)
+
+  useEffect(() => {
+    function handlePopState() {
+      setFocusedActivityId(getFocusedActivityId())
+    }
+
+    window.addEventListener('popstate', handlePopState)
+
+    return () => {
+      window.removeEventListener('popstate', handlePopState)
+    }
+  }, [])
 
   useEffect(() => {
     async function loadActivities() {
@@ -593,7 +611,7 @@ function ActivitiesPage() {
       '/activities',
     )
 
-    window.dispatchEvent(new PopStateEvent('popstate'))
+    setFocusedActivityId(null)
   }
 
   function handleClearFilters() {
@@ -649,7 +667,7 @@ function ActivitiesPage() {
       )}
 
       <section>
-        <h1>As minhas atividades</h1>
+        <h1>Minhas atividades</h1>
         <p>
           Planeie atividades ao ar livre e consulte as condições
           meteorológicas para o local escolhido.
@@ -665,27 +683,6 @@ function ActivitiesPage() {
         formDataToEdit={formDataToEdit}
         onCancelEdit={handleCancelEdit}
       />
-
-      {focusedActivityId !== null && (
-        <section className="activity-focus">
-          <div>
-            <span className="eyebrow">
-              Atividade selecionada
-            </span>
-
-            <p>
-              Está a visualizar a atividade aberta através do calendário.
-            </p>
-          </div>
-
-          <button
-            type="button"
-            onClick={clearFocusedActivity}
-          >
-            Ver todas as atividades
-          </button>
-        </section>
-      )}
 
       <ActivityFilters
         searchTerm={searchTerm}
@@ -712,6 +709,27 @@ function ActivitiesPage() {
         hasActiveFilters={hasActiveFilters}
         onClearFilters={handleClearFilters}
       />
+
+      {focusedActivityId !== null && (
+        <section className="activity-focus">
+          <div>
+            <span className="eyebrow">
+              Atividade selecionada
+            </span>
+
+            <p>
+              Está a visualizar a atividade aberta através do calendário.
+            </p>
+          </div>
+
+          <button
+            type="button"
+            onClick={clearFocusedActivity}
+          >
+            Ver todas as atividades
+          </button>
+        </section>
+      )}
 
       {isLoading && (
         <section className="feedback-message">

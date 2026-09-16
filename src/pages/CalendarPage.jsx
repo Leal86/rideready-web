@@ -74,6 +74,8 @@ function CalendarPage({ onOpenActivity }) {
     const [error, setError] = useState('')
     const [selectedDate, setSelectedDate] = useState(null)
     const [selectedActivity, setSelectedActivity] = useState(null)
+    const [isModalWeatherLoading, setIsModalWeatherLoading] = useState(false)
+    const [modalWeatherError, setModalWeatherError] = useState('')
     const selectedDaySectionRef = useRef(null)
 
     const today = new Date()
@@ -114,6 +116,84 @@ function CalendarPage({ onOpenActivity }) {
             block: 'start',
         })
     }, [selectedDate])
+
+    async function handleRefreshSelectedActivityWeather() {
+        if (
+            !selectedActivity ||
+            selectedActivity.status !== 'PLANNED'
+        ) {
+            return
+        }
+
+        const activityId = selectedActivity.id
+
+        try {
+            setIsModalWeatherLoading(true)
+            setModalWeatherError('')
+
+            const response = await api.get(
+                `/activities/${activityId}/weather`,
+            )
+
+            const weather = response.data
+
+            if (!weather.available) {
+                setModalWeatherError(
+                    weather.message ??
+                    'A previsão meteorológica ainda não está disponível para esta atividade.',
+                )
+
+                return
+            }
+
+            const weatherSnapshot = {
+                weather_checked_at: weather.checked_at,
+                weather_temperature: weather.temperature,
+                weather_apparent_temperature: weather.apparent_temperature,
+                weather_precipitation_probability:
+                    weather.precipitation_probability,
+                weather_precipitation: weather.precipitation,
+                weather_code: weather.weather_code,
+                weather_wind_speed: weather.wind_speed,
+                weather_wind_gusts: weather.wind_gusts,
+                weather_assessment_level:
+                    weather.assessment?.level ?? null,
+                weather_assessment_reasons:
+                    weather.assessment?.reasons ?? [],
+            }
+
+            setSelectedActivity((currentActivity) => {
+                if (
+                    !currentActivity ||
+                    currentActivity.id !== activityId
+                ) {
+                    return currentActivity
+                }
+
+                return {
+                    ...currentActivity,
+                    ...weatherSnapshot,
+                }
+            })
+
+            setActivities((currentActivities) =>
+                currentActivities.map((activity) =>
+                    activity.id === activityId
+                        ? {
+                            ...activity,
+                            ...weatherSnapshot,
+                        }
+                        : activity,
+                ),
+            )
+        } catch {
+            setModalWeatherError(
+                'Não foi possível atualizar as condições meteorológicas.',
+            )
+        } finally {
+            setIsModalWeatherLoading(false)
+        }
+    }
 
     const activitiesByDate = useMemo(() => {
         return activities.reduce((accumulator, activity) => {
@@ -632,7 +712,10 @@ function CalendarPage({ onOpenActivity }) {
                         onClick={() => setSelectedActivity(null)}
                     >
                         <section
-                            className="calendar-activity-modal__content"
+                            className={[
+                                'calendar-activity-modal__content',
+                                `calendar-activity-modal__content--${selectedActivity.status.toLowerCase()}`,
+                            ].join(' ')}
                             role="dialog"
                             aria-modal="true"
                             aria-labelledby="calendar-activity-modal-title"
@@ -688,7 +771,14 @@ function CalendarPage({ onOpenActivity }) {
 
                                 <p>
                                     <strong>Estado:</strong>{' '}
-                                    {activityStatusLabels[selectedActivity.status]}
+                                    <span
+                                        className={[
+                                            'calendar-activity-modal__status',
+                                            `calendar-activity-modal__status--${selectedActivity.status.toLowerCase()}`,
+                                        ].join(' ')}
+                                    >
+                                        {activityStatusLabels[selectedActivity.status]}
+                                    </span>
                                 </p>
 
                                 {selectedActivity.notes && (
@@ -796,14 +886,38 @@ function CalendarPage({ onOpenActivity }) {
                                         </>
                                     ) : (
                                         <p className="calendar-activity-modal__weather-empty">
-                                            Ainda não existe uma previsão meteorológica guardada para esta
-                                            atividade.
+                                            {selectedActivity.status === 'CANCELLED'
+                                                ? 'A previsão meteorológica não está disponível para atividades canceladas.'
+                                                : selectedActivity.status === 'COMPLETED'
+                                                    ? 'Não existe uma previsão meteorológica guardada para esta atividade concluída.'
+                                                    : 'Ainda não existe uma previsão meteorológica guardada para esta atividade.'}
                                         </p>
                                     )}
+
+                                    {modalWeatherError && (
+                                        <p className="calendar-activity-modal__weather-error">
+                                            {modalWeatherError}
+                                        </p>
+                                    )}
+
                                 </div>
+
                             </div>
 
                             <div className="calendar-activity-modal__actions">
+                                {selectedActivity.status === 'PLANNED' && (
+                                    <button
+                                        type="button"
+                                        className="calendar-activity-modal__weather-button"
+                                        onClick={handleRefreshSelectedActivityWeather}
+                                        disabled={isModalWeatherLoading}
+                                    >
+                                        {isModalWeatherLoading
+                                            ? 'A atualizar...'
+                                            : 'Atualizar previsão'}
+                                    </button>
+                                )}
+
                                 <button
                                     type="button"
                                     className="calendar-activity-modal__activities-button"

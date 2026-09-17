@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 
 import api from '../services/api'
+import { getApiErrorMessage } from '../utils/apiError'
 
 function LocationAutocomplete({
   value,
@@ -41,11 +42,14 @@ function LocationAutocomplete({
         if (!isCancelled) {
           setSuggestions(response.data)
         }
-      } catch {
+      } catch (requestError) {
         if (!isCancelled) {
           setSuggestions([])
           setSearchError(
-            'Não foi possível pesquisar locais neste momento.',
+            getApiErrorMessage(
+              requestError,
+              'Não foi possível pesquisar locais neste momento.',
+            ),
           )
         }
       } finally {

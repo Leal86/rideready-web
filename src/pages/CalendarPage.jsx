@@ -6,6 +6,7 @@ import {
 } from 'react'
 
 import api from '../services/api'
+import { getApiErrorMessage } from '../utils/apiError'
 import '../styles/calendar.css'
 
 const monthNames = [
@@ -186,9 +187,12 @@ function CalendarPage({ onOpenActivity }) {
                         : activity,
                 ),
             )
-        } catch {
+        } catch (requestError) {
             setModalWeatherError(
-                'Não foi possível atualizar as condições meteorológicas.',
+                getApiErrorMessage(
+                    requestError,
+                    'Não foi possível atualizar as condições meteorológicas.',
+                ),
             )
         } finally {
             setIsModalWeatherLoading(false)

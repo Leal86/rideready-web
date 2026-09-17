@@ -7,6 +7,7 @@ import {
 import ActivityForm from '../components/ActivityForm'
 import ActivityList from '../components/ActivityList'
 import api from '../services/api'
+import { getApiErrorMessage } from '../utils/apiError'
 import ActivityFilters from '../components/ActivityFilters'
 
 
@@ -177,11 +178,13 @@ function ActivitiesPage() {
         ...current,
         [activityId]: response.data,
       }))
-    } catch {
+    } catch (requestError) {
       setWeatherErrorByActivity((current) => ({
         ...current,
-        [activityId]:
+        [activityId]: getApiErrorMessage(
+          requestError,
           'Não foi possível consultar as condições meteorológicas.',
+        ),
       }))
     } finally {
       setWeatherLoadingByActivity((current) => ({
@@ -243,42 +246,23 @@ function ActivitiesPage() {
 
           return true
 
-        } catch {
+        } catch (confirmationError) {
           setError(
-            'Não foi possível criar a atividade após a confirmação.',
+            getApiErrorMessage(
+              confirmationError,
+              'Não foi possível criar a atividade após a confirmação.',
+            ),
           )
 
           return false
         }
       }
 
-      const detail = requestError.response?.data?.detail
-
-      if (typeof detail === 'string') {
-        setError(detail)
-        return false
-      }
-
-      if (detail?.message) {
-        setError(detail.message)
-        return false
-      }
-
-      if (Array.isArray(detail)) {
-        const messages = detail.map((item) => {
-          const field = item.loc?.at(-1)
-
-          return field
-            ? `${field}: ${item.msg}`
-            : item.msg
-        })
-
-        setError(messages.join(' '))
-        return false
-      }
-
       setError(
-        'Não foi possível criar a atividade. Verifique os dados e tente novamente.',
+        getApiErrorMessage(
+          requestError,
+          'Não foi possível criar a atividade. Verifique os dados e tente novamente.',
+        ),
       )
 
       return false
@@ -327,9 +311,12 @@ function ActivitiesPage() {
       }
 
       return true
-    } catch {
+    } catch (requestError) {
       setError(
-        'Não foi possível atualizar a atividade. Verifique os dados e tente novamente.',
+        getApiErrorMessage(
+          requestError,
+          'Não foi possível atualizar a atividade. Verifique os dados e tente novamente.',
+        ),
       )
 
       return false
@@ -463,9 +450,12 @@ function ActivitiesPage() {
       setSuccessMessage(
         `A atividade "${activity.title}" foi eliminada com sucesso.`,
       )
-    } catch {
+    } catch (requestError) {
       setError(
-        'Não foi possível eliminar a atividade. Tente novamente.',
+        getApiErrorMessage(
+          requestError,
+          'Não foi possível eliminar a atividade. Tente novamente.',
+        ),
       )
     }
   }

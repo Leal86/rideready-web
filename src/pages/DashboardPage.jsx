@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 
 import api from '../services/api'
+import { getApiErrorMessage } from '../utils/apiError'
 
 const activityTypeLabels = {
   WALKING: 'Caminhada',
@@ -130,10 +131,13 @@ function DashboardPage() {
         if (!isCancelled) {
           setCurrentWeather(response.data)
         }
-      } catch {
+      } catch (requestError) {
         if (!isCancelled) {
           setWeatherError(
-            'Não foi possível obter as condições meteorológicas atuais.',
+            getApiErrorMessage(
+              requestError,
+              'Não foi possível obter as condições meteorológicas atuais.',
+            ),
           )
         }
       } finally {

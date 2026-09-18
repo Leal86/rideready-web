@@ -1,0 +1,50 @@
+services:
+  postgres:
+    image: postgres:17
+    environment:
+      POSTGRES_USER: rideready
+      POSTGRES_PASSWORD: rideready
+      POSTGRES_DB: rideready
+    ports:
+      - "5432:5432"
+    volumes:
+      - rideready-postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U rideready -d rideready"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+  api:
+    build:
+      context: ../rideready-api
+      dockerfile: Dockerfile
+    env_file:
+      - ../rideready-api/.env
+    environment:
+      DATABASE_URL: postgresql+psycopg://rideready:rideready@postgres:5432/rideready
+    command: >
+      sh -c "alembic upgrade head &&
+      uvicorn app.main:app --host 0.0.0.0 --port 8000"
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        VITE_API_URL: http://localhost:8000
+    ports:
+      - "5173:5173"
+    depends_on:
+      - api
+    restart: unless-stopped
+
+volumes:
+  rideready-postgres-data:

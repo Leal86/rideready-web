@@ -41,6 +41,10 @@ O RideReady disponibiliza:
 
 ## Arquitetura
 
+### Diagrama da arquitetura
+
+![Arquitetura do RideReady](docs/architecture.svg)
+
 O RideReady utiliza componentes independentes que comunicam através de HTTP/JSON.
 
 ```text

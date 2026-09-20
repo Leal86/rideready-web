@@ -2,6 +2,45 @@ import { useState } from 'react'
 
 import { getWeatherIcon } from '../utils/weather'
 
+function getWeatherSummary({
+  isCancelled,
+  weather,
+  isWeatherLoading,
+  weatherError,
+  assessmentLabels,
+}) {
+  if (isCancelled) {
+    return 'Não disponível'
+  }
+
+  if (weather?.available) {
+    return (
+      <>
+        {getWeatherIcon(weather.weather_code)}{' '}
+        {assessmentLabels[
+          weather.assessment?.level
+        ] ?? weather.assessment?.level}
+        {' · '}
+        {weather.temperature} °C
+      </>
+    )
+  }
+
+  if (isWeatherLoading) {
+    return 'A consultar...'
+  }
+
+  if (weatherError) {
+    return 'Consulta indisponível'
+  }
+
+  if (weather && !weather.available) {
+    return 'Previsão ainda indisponível'
+  }
+
+  return 'Ainda não consultadas'
+}
+
 function ActivityCard({
   activity,
   isBulkSelectionMode,
@@ -85,26 +124,13 @@ function ActivityCard({
             <strong>Condições:</strong>
 
             <span>
-              {isCancelled ? (
-                'Não disponível'
-              ) : weather?.available ? (
-                <>
-                  {getWeatherIcon(weather.weather_code)}{' '}
-                  {assessmentLabels[
-                    weather.assessment?.level
-                  ] ?? weather.assessment?.level}
-                  {' · '}
-                  {weather.temperature} °C
-                </>
-              ) : isWeatherLoading ? (
-                'A consultar...'
-              ) : weatherError ? (
-                'Consulta indisponível'
-              ) : weather && !weather.available ? (
-                'Previsão ainda indisponível'
-              ) : (
-                'Ainda não consultadas'
-              )}
+              {getWeatherSummary({
+                isCancelled,
+                weather,
+                isWeatherLoading,
+                weatherError,
+                assessmentLabels,
+              })}
             </span>
           </p>
         </div>

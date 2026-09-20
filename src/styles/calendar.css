@@ -1,7 +1,3 @@
-.calendar-header h1 {
-    margin: 0;
-}
-
 .calendar-sidebar {
     grid-area: sidebar;
 

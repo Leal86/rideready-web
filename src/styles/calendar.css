@@ -14,44 +14,6 @@
     align-self: start;
 }
 
-.calendar-planning {
-    grid-area: planning;
-
-    width: min(100%, 900px);
-    min-width: 0;
-    margin: var(--space-sm) auto 0;
-
-    text-align: center;
-    justify-self: center;
-}
-
-.calendar-layout {
-    grid-area: calendar;
-
-    width: min(100%, 900px);
-    max-width: 900px;
-    min-width: 0;
-    margin: 0 auto;
-
-    justify-self: center;
-}
-
-
-
-.calendar__weekdays,
-.calendar__grid {
-    width: 100%;
-    min-width: 0;
-}
-
-.calendar {
-    padding: var(--space-lg);
-    background: var(--color-surface);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-large);
-    box-shadow: var(--shadow-card);
-}
-
 .calendar__toolbar {
     display: flex;
     align-items: center;
@@ -124,28 +86,6 @@
     display: grid;
     grid-template-columns: repeat(7, minmax(0, 1fr));
     border-left: 1px solid var(--color-border);
-}
-
-.calendar__day {
-    height: 105px;
-    min-width: 0;
-    padding: var(--space-sm);
-
-    border: 0;
-    border-right: 1px solid var(--color-border);
-    border-bottom: 1px solid var(--color-border);
-
-    background: transparent;
-    color: inherit;
-
-    font: inherit;
-    text-align: left;
-
-    cursor: pointer;
-
-    transition:
-        background-color 0.2s ease,
-        box-shadow 0.2s ease;
 }
 
 .calendar__day--empty {
@@ -919,6 +859,7 @@
     margin: 0;
 
     text-align: center;
+    justify-self: center;
 }
 
 .calendar-layout {
@@ -929,6 +870,7 @@
     min-width: 0;
 
     margin: 0;
+    justify-self: center;
 }
 
 .calendar {
@@ -936,7 +878,14 @@
     max-width: 700px;
     min-width: 0;
 
+    padding: var(--space-lg);
+
     box-sizing: border-box;
+
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-large);
+    box-shadow: var(--shadow-card);
 }
 
 .calendar-sidebar {
@@ -992,8 +941,25 @@
     min-width: 0;
     height: auto;
     min-height: 0;
+    padding: var(--space-sm);
 
     aspect-ratio: 1 / 1;
+
+    border: 0;
+    border-right: 1px solid var(--color-border);
+    border-bottom: 1px solid var(--color-border);
+
+    background: transparent;
+    color: inherit;
+
+    font: inherit;
+    text-align: left;
+
+    cursor: pointer;
+
+    transition:
+        background-color 0.2s ease,
+        box-shadow 0.2s ease;
 }
 
 /*

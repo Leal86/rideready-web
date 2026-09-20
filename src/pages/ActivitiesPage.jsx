@@ -37,6 +37,24 @@ function buildWeatherSnapshot(activity) {
   }
 }
 
+function isPastPlannedActivity(activity) {
+  if (activity.status !== 'PLANNED') {
+    return false
+  }
+
+  const scheduledDateTime = new Date(
+    `${activity.scheduled_date}T${activity.scheduled_time}`,
+  )
+
+  return scheduledDateTime < new Date()
+}
+
+function handleScrollToTop() {
+  window.scrollTo({
+    top: 0,
+    behavior: 'smooth',
+  })
+}
 
 function ActivitiesPage() {
   const [activities, setActivities] = useState([])
@@ -483,18 +501,6 @@ function ActivitiesPage() {
     setFormDataToEdit(null)
   }
 
-  function isPastPlannedActivity(activity) {
-    if (activity.status !== 'PLANNED') {
-      return false
-    }
-
-    const scheduledDateTime = new Date(
-      `${activity.scheduled_date}T${activity.scheduled_time}`,
-    )
-
-    return scheduledDateTime < new Date()
-  }
-
   async function handleCompleteActivity(activity) {
     await handleUpdateActivity(activity.id, {
       status: 'COMPLETED',
@@ -613,26 +619,15 @@ function ActivitiesPage() {
     setDateFilter('ALL')
   }
 
-  function handleScrollToTop() {
-    window.scrollTo({
-      top: 0,
-      behavior: 'smooth',
-    })
-  }
-
   return (
 
     <main className="app-content">
 
       {successMessage && (
-        <div
-          className="success-modal-overlay"
-          role="presentation"
-        >
-          <div
+        <div className="success-modal-overlay">
+          <dialog
             className="success-modal"
-            role="dialog"
-            aria-modal="true"
+            open
             aria-labelledby="success-modal-title"
           >
             <div className="success-modal__icon" aria-hidden="true">
@@ -652,7 +647,7 @@ function ActivitiesPage() {
             >
               Continuar
             </button>
-          </div>
+          </dialog>
         </div>
       )}
 

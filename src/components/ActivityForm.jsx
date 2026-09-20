@@ -24,6 +24,16 @@ function ActivityForm({
 
   const [formError, setFormError] = useState('')
 
+  let submitButtonLabel = 'Criar atividade'
+
+  if (editingActivity) {
+    submitButtonLabel = 'Guardar alterações'
+  }
+
+  if (isSubmitting) {
+    submitButtonLabel = 'A guardar...'
+  }
+
   function handleChange(event) {
     const { name, value } = event.target
 
@@ -186,11 +196,7 @@ function ActivityForm({
             type="submit"
             disabled={isSubmitting}
           >
-            {isSubmitting
-              ? 'A guardar...'
-              : editingActivity
-                ? 'Guardar alterações'
-                : 'Criar atividade'}
+            {submitButtonLabel}
           </button>
         </div>
       </form>

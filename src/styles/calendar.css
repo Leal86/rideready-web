@@ -962,17 +962,6 @@
         box-shadow 0.2s ease;
 }
 
-/*
- * Em desktop/tablet mostramos:
- * - máximo 2 atividades;
- * - depois "+ N atividade(s)".
- */
-.calendar__day-activities {
-    display: flex;
-}
-
-
-
 .calendar__activity-icon {
     display: inline-flex;
     align-items: center;

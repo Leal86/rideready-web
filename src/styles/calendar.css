@@ -1708,6 +1708,7 @@
 
     .calendar-summary {
         grid-area: summary;
+        text-align: center;
     }
 
     .calendar-upcoming {
@@ -1886,10 +1887,6 @@
         font-size: 0.7rem;
         font-weight: 700;
         line-height: 1;
-    }
-
-    .calendar-summary {
-        text-align: center;
     }
 
     .calendar-summary>h2 {

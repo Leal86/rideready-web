@@ -77,7 +77,11 @@ function App() {
         />
       )}
 
-      {activeSection === 'dashboard' && <DashboardPage />}
+      {activeSection === 'dashboard' && (
+        <DashboardPage
+          onOpenActivity={handleOpenActivity}
+        />
+      )}
 
       {activeSection === 'calendar' && (
         <CalendarPage

@@ -1117,11 +1117,20 @@ p {
   align-items: center;
   gap: var(--space-md);
 
+  width: 100%;
   min-width: 0;
   padding: var(--space-md);
 
-  background-color: var(--color-background-secondary);
+  border: 0;
   border-radius: var(--radius-medium);
+
+  background-color: var(--color-background-secondary);
+  color: inherit;
+
+  font: inherit;
+  text-align: left;
+
+  cursor: pointer;
 }
 
 .dashboard-upcoming__image-wrapper {

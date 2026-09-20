@@ -55,7 +55,7 @@ function getWeatherDescription(weatherCode) {
   return descriptions[weatherCode] ?? 'Condições variáveis'
 }
 
-function DashboardPage() {
+function DashboardPage({ onOpenActivity }) {
   const [currentPosition, setCurrentPosition] = useState(null)
   const [locationError, setLocationError] = useState(() =>
     navigator.geolocation
@@ -416,9 +416,12 @@ function DashboardPage() {
               {upcomingActivities.length > 0 ? (
                 <div className="dashboard-upcoming__list">
                   {upcomingActivities.map((activity) => (
-                    <article
+                    <button
                       key={activity.id}
+                      type="button"
                       className="dashboard-upcoming__item"
+                      onClick={() => onOpenActivity(activity.id)}
+                      aria-label={`Abrir atividade ${activity.title}`}
                     >
                       <div className="dashboard-upcoming__image-wrapper">
                         <img
@@ -455,7 +458,7 @@ function DashboardPage() {
                       >
                         ›
                       </span>
-                    </article>
+                    </button>
                   ))}
                 </div>
               ) : (

@@ -1444,17 +1444,6 @@
         padding-top: 22px;
     }
 
-    /*
-   * Estrutura:
-   *
-   * Calendário
-   *
-   * Resumo do mês | Próximas atividades
-   *
-   *       PLANEAMENTO
-   *
-   *       Calendário
-   */
     .calendar-content {
         grid-template-columns: repeat(2, minmax(0, 1fr));
 
@@ -1711,9 +1700,8 @@
         white-space: nowrap;
     }
 
-    .eyebrow {
+    .calendar-page .eyebrow {
         font-size: 0.65rem !important;
-
     }
 }
 
@@ -1984,7 +1972,7 @@
         font-size: 1.1rem;
     }
 
-    span.eyebrow {
+    .calendar-page span.eyebrow {
         font-size: 0.65rem;
     }
 
@@ -2054,18 +2042,12 @@
         font-size: 1.2rem;
     }
 
-    .site-header__nav-button {
-        padding: 0 var(--space-sm);
-        font-size: 0.7rem;
-        white-space: nowrap;
-    }
-
-    h2 {
+    .calendar-page h2 {
         font-size: 1.3rem;
         text-align: center;
     }
 
-    span.eyebrow {
+    .calendar-page span.eyebrow {
         font-size: 0.6rem;
     }
 

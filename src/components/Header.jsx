@@ -6,13 +6,17 @@ function Header({
     <header className="site-header">
       <div className="site-header__content">
         <div className="site-header__brand">
-          <span className="site-header__title">
-            RideReady
-          </span>
+          <img
+            className="site-header__logo site-header__logo--full"
+            src="/brand/logo-completo-2.svg"
+            alt="RideReady — Planeie as suas aventuras ao ar livre"
+          />
 
-          <span className="site-header__subtitle">
-            Planeie as suas atividades ao ar livre.
-          </span>
+          <img
+            className="site-header__logo site-header__logo--symbol"
+            src="/brand/logo.svg"
+            alt="RideReady"
+          />
         </div>
 
         <nav

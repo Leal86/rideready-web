@@ -41,20 +41,19 @@ p {
 
 .site-header__brand {
   display: flex;
-  flex-direction: column;
-  gap: var(--space-xs);
+  align-items: center;
+  min-width: 0;
 }
 
-.site-header__title {
-  color: var(--color-primary);
-  font-size: 1.5rem;
-  font-weight: var(--font-weight-bold);
-  line-height: 1.2;
+.site-header__logo {
+  display: block;
+  width: 350px;
+  max-width: 100%;
+  height: auto;
 }
 
-.site-header__subtitle {
-  color: var(--color-text-secondary);
-  font-size: 0.875rem;
+.site-header__logo--symbol {
+  display: none;
 }
 
 .site-header__navigation {
@@ -79,6 +78,17 @@ p {
   color: var(--color-primary);
 }
 
+@media (min-width: 801px) and (max-width: 1100px) {
+  .site-header__logo {
+    width: 300px;
+  }
+}
+
+@media (min-width: 721px) and (max-width: 800px) {
+  .site-header__logo {
+    width: 280px;
+  }
+}
 
 /* ==========================================================================
    3. Formulário de atividades
@@ -816,7 +826,7 @@ p {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: var(--space-lg);
-  margin-top: var(--space-xl);
+  margin-top: var(--space-md);
 }
 
 .dashboard-stat-card {
@@ -869,7 +879,7 @@ p {
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: var(--space-lg);
 
-  margin-top: var(--space-xl);
+  margin-top: var(--space-md);
 }
 
 .dashboard-weather,
@@ -1073,7 +1083,7 @@ p {
 }
 
 .dashboard-weather__source {
-  margin: 30px 0 5px 5px;
+  margin: 15px 0 5px 5px;
   color: #607985;
   font-size: 12px;
   line-height: 1.4;
@@ -1692,19 +1702,44 @@ p {
   }
 }
 
+
 @media (max-width: 720px) {
   .site-header__content {
-    flex-direction: column;
-    align-items: stretch;
+    flex-direction: row;
+    align-items: center;
+    gap: var(--space-sm);
+  }
+
+  .site-header__brand {
+    flex: 0 0 auto;
+  }
+
+  .site-header__logo--full {
+    display: none;
+  }
+
+  .site-header__logo--symbol {
+    display: block;
+    width: 60px;
+    margin-left: 10px;
   }
 
   .site-header__navigation {
-    width: 100%;
+    display: flex;
+    flex: 1;
+    width: auto;
+    min-width: 0;
+    justify-content: flex-end;
+    gap: 2px;
     overflow-x: auto;
   }
 
   .site-header__nav-button {
-    flex: 1;
+    flex: 0 1 auto;
+    min-width: 0;
+    min-height: 36px;
+    padding: 0 18px;
+    font-size: 0.8rem;
     white-space: nowrap;
   }
 
@@ -2001,6 +2036,7 @@ p {
     white-space: nowrap;
   }
 
+
   .dashboard-weather__content {
     padding-inline: 14px;
   }
@@ -2039,6 +2075,7 @@ p {
 
   .dashboard-weather>p.dashboard-weather__source {
     margin-left: 0;
+    font-size: 0.65rem;
   }
 
   .dashboard-weather {
@@ -2062,11 +2099,36 @@ p {
     padding: 0 6px;
     font-size: 0.75rem;
   }
+
+  .site-header__content {
+    gap: 20px;
+  }
+
+  .site-header__logo--symbol {
+    width: 50px;
+    margin-left: 0px;
+  }
+
+  .site-header__navigation {
+    justify-content: space-between;
+    gap: 0;
+  }
+
+  .site-header__nav-button {
+    flex: 1 1 0;
+    padding: 0 6px;
+    font-size: 0.7rem;
+  }
 }
+
 
 @media (max-width: 320px) {
   .dashboard-weather {
     padding: var(--space-sm);
+  }
+
+  .dashboard-weather>p.dashboard-weather__source {
+    font-size: 0.6rem;
   }
 
   .dashboard-weather__content {

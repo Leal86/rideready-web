@@ -657,7 +657,7 @@ p {
 .activity-card .activity-action--warning {
   border-color: var(--color-warning);
   background-color: rgba(244, 166, 42, 0.1);
-  color: #9a6500;
+  color: #7a4d00;
 }
 
 .activity-card .activity-action--warning:hover {
@@ -1017,15 +1017,15 @@ p {
 }
 
 .dashboard-weather__source {
-  margin: 16px 0 6px;
+  margin: 15px 0 5px 5px;
   color: #607985;
-  font-size: 10px;
+  font-size: 12px;
   line-height: 1.4;
   text-align: left;
 }
 
 .dashboard-weather__source a {
-  color: inherit;
+  color: var(--color-primary-dark);
   font-weight: 600;
   text-decoration: underline;
   text-underline-offset: 2px;
@@ -1080,25 +1080,6 @@ p {
 
 .dashboard-weather__footer .dashboard-weather__note {
   margin: 0;
-}
-
-.dashboard-weather__source {
-  margin: 15px 0 5px 5px;
-  color: #607985;
-  font-size: 12px;
-  line-height: 1.4;
-  text-align: left;
-}
-
-.dashboard-weather__source a {
-  color: var(--color-primary-dark);
-  font-weight: 600;
-  text-decoration: underline;
-  text-underline-offset: 2px;
-}
-
-.dashboard-weather__source a:hover {
-  color: #062b3a;
 }
 
 .dashboard-upcoming__header h2 {
@@ -1976,19 +1957,21 @@ p {
   /* Próximas atividades */
 
   .dashboard-upcoming__header {
-    display: flex;
+    display: contents;
     flex-direction: column;
     align-items: stretch;
     min-height: 0;
   }
 
   .dashboard-upcoming__header .eyebrow {
+    order: 1;
     padding-right: 0;
     text-align: center;
     white-space: normal;
   }
 
   .dashboard-upcoming__header h2 {
+    order: 2;
     margin: var(--space-sm) 0 0;
     padding: 0;
     font-size: 1.25rem;
@@ -1997,25 +1980,8 @@ p {
     white-space: normal;
   }
 
-  /*
-   * O botão será visualmente colocado depois da lista.
-   * O painel torna-se um grid para podermos alterar a ordem.
-   */
-
   .dashboard-upcoming {
     display: grid;
-  }
-
-  .dashboard-upcoming__header {
-    display: contents;
-  }
-
-  .dashboard-upcoming__header .eyebrow {
-    order: 1;
-  }
-
-  .dashboard-upcoming__header h2 {
-    order: 2;
   }
 
   .dashboard-upcoming__list {

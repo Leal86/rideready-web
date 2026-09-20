@@ -386,6 +386,7 @@ function CalendarPage({ onOpenActivity }) {
                                         <span className="calendar-summary__icon" aria-hidden="true">
                                             {summaryIcons.total}
                                         </span>
+                                        {' '}
                                         Total
                                     </span>
 
@@ -397,6 +398,7 @@ function CalendarPage({ onOpenActivity }) {
                                         <span className="calendar-summary__icon" aria-hidden="true">
                                             {summaryIcons.planned}
                                         </span>
+                                        {' '}
                                         Planeadas
                                     </span>
 
@@ -408,6 +410,7 @@ function CalendarPage({ onOpenActivity }) {
                                         <span className="calendar-summary__icon" aria-hidden="true">
                                             {summaryIcons.completed}
                                         </span>
+                                        {' '}
                                         Concluídas
                                     </span>
 
@@ -419,6 +422,7 @@ function CalendarPage({ onOpenActivity }) {
                                         <span className="calendar-summary__icon" aria-hidden="true">
                                             {summaryIcons.cancelled}
                                         </span>
+                                        {' '}
                                         Canceladas
                                     </span>
 
@@ -562,8 +566,9 @@ function CalendarPage({ onOpenActivity }) {
                                         activitiesByDate[dateKey] ?? []
 
                                     return (
-                                        <article
+                                        <button
                                             key={dateKey}
+                                            type="button"
                                             className={[
                                                 'calendar__day',
                                                 isToday(day) ? 'calendar__day--today' : '',
@@ -615,7 +620,7 @@ function CalendarPage({ onOpenActivity }) {
                                                     {dayActivities.length}
                                                 </span>
                                             )}
-                                        </article>
+                                        </button>
                                     )
                                 })}
                             </div>
@@ -677,7 +682,6 @@ function CalendarPage({ onOpenActivity }) {
                     <div
                         className="calendar-activity-modal"
                         role="presentation"
-                        onClick={() => setSelectedActivity(null)}
                     >
                         <section
                             className={[
@@ -687,7 +691,6 @@ function CalendarPage({ onOpenActivity }) {
                             role="dialog"
                             aria-modal="true"
                             aria-labelledby="calendar-activity-modal-title"
-                            onClick={(event) => event.stopPropagation()}
                         >
                             <button
                                 type="button"

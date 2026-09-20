@@ -1713,6 +1713,7 @@
 
     .calendar-upcoming {
         grid-area: upcoming;
+        text-align: center;
     }
 
     /*
@@ -1902,10 +1903,6 @@
 
     .calendar-summary__label>.calendar-summary__icon {
         font-size: 0.75rem;
-    }
-
-    .calendar-upcoming {
-        text-align: center;
     }
 
     .calendar-upcoming__header>h2 {

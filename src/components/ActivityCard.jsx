@@ -1,5 +1,7 @@
 import { useState } from 'react'
 
+import { getWeatherIcon } from '../utils/weather'
+
 function ActivityCard({
   activity,
   isBulkSelectionMode,
@@ -32,55 +34,6 @@ function ActivityCard({
     FAVORABLE: 'Favorável',
     CAUTION: 'Atenção',
     UNFAVORABLE: 'Desfavorável',
-  }
-
-  function getWeatherIcon(weather) {
-    if (!weather?.available) {
-      return '—'
-    }
-
-    if (
-      weather.wind_speed >= 30 ||
-      weather.wind_gusts >= 40
-    ) {
-      return '💨'
-    }
-
-    const code = weather.weather_code
-
-    if (code === 0) {
-      return '☀️'
-    }
-
-    if ([1, 2].includes(code)) {
-      return '🌤️'
-    }
-
-    if (code === 3) {
-      return '☁️'
-    }
-
-    if ([45, 48].includes(code)) {
-      return '🌫️'
-    }
-
-    if ([51, 53, 55, 56, 57].includes(code)) {
-      return '🌦️'
-    }
-
-    if ([61, 63, 65, 66, 67, 80, 81, 82].includes(code)) {
-      return '🌧️'
-    }
-
-    if ([71, 73, 75, 77, 85, 86].includes(code)) {
-      return '❄️'
-    }
-
-    if ([95, 96, 99].includes(code)) {
-      return '⛈️'
-    }
-
-    return '🌤️'
   }
 
   return (
@@ -136,7 +89,7 @@ function ActivityCard({
                 'Não disponível'
               ) : weather?.available ? (
                 <>
-                  {getWeatherIcon(weather)}{' '}
+                  {getWeatherIcon(weather.weather_code)}{' '}
                   {assessmentLabels[
                     weather.assessment?.level
                   ] ?? weather.assessment?.level}

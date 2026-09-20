@@ -133,10 +133,7 @@ function CalendarPage({ onOpenActivity }) {
     }, [selectedDate])
 
     async function handleRefreshSelectedActivityWeather() {
-        if (
-            !selectedActivity ||
-            selectedActivity.status !== 'PLANNED'
-        ) {
+        if (selectedActivity?.status !== 'PLANNED') {
             return
         }
 

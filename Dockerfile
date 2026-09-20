@@ -16,6 +16,10 @@ ENV VITE_API_URL=$VITE_API_URL
 
 RUN npm run build
 
+RUN chown -R node:node /app/node_modules
+
+USER node
+
 EXPOSE 5173
 
 CMD ["npm", "run", "preview", "--", "--host", "0.0.0.0", "--port", "5173"]

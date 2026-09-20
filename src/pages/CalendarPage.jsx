@@ -71,6 +71,18 @@ const weatherAssessmentLabels = {
     UNFAVORABLE: 'Desfavorável',
 }
 
+function getWeatherEmptyMessage(status) {
+    if (status === 'CANCELLED') {
+        return 'A previsão meteorológica não está disponível para atividades canceladas.'
+    }
+
+    if (status === 'COMPLETED') {
+        return 'Não existe uma previsão meteorológica guardada para esta atividade concluída.'
+    }
+
+    return 'Ainda não existe uma previsão meteorológica guardada para esta atividade.'
+}
+
 function CalendarPage({ onOpenActivity }) {
     const [activities, setActivities] = useState([])
     const [isLoading, setIsLoading] = useState(true)
@@ -354,18 +366,6 @@ function CalendarPage({ onOpenActivity }) {
             dateStyle: 'short',
             timeStyle: 'short',
         })
-    }
-
-    function getWeatherEmptyMessage(status) {
-        if (status === 'CANCELLED') {
-            return 'A previsão meteorológica não está disponível para atividades canceladas.'
-        }
-
-        if (status === 'COMPLETED') {
-            return 'Não existe uma previsão meteorológica guardada para esta atividade concluída.'
-        }
-
-        return 'Ainda não existe uma previsão meteorológica guardada para esta atividade.'
     }
 
     return (

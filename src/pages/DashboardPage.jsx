@@ -55,6 +55,11 @@ function getWeatherDescription(weatherCode) {
   return descriptions[weatherCode] ?? 'Condições variáveis'
 }
 
+function handleOpenActivities() {
+  window.history.pushState({}, '', '/activities')
+  window.dispatchEvent(new PopStateEvent('popstate'))
+}
+
 function DashboardPage({ onOpenActivity }) {
   const [currentPosition, setCurrentPosition] = useState(null)
   const [locationError, setLocationError] = useState(() =>
@@ -228,11 +233,6 @@ function DashboardPage({ onOpenActivity }) {
       return dateA - dateB
     })
     .slice(0, 2)
-
-  function handleOpenActivities() {
-    window.history.pushState({}, '', '/activities')
-    window.dispatchEvent(new PopStateEvent('popstate'))
-  }
 
   return (
     <main className="app-content">

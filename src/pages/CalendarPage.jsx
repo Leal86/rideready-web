@@ -356,6 +356,18 @@ function CalendarPage({ onOpenActivity }) {
         })
     }
 
+    function getWeatherEmptyMessage(status) {
+        if (status === 'CANCELLED') {
+            return 'A previsão meteorológica não está disponível para atividades canceladas.'
+        }
+
+        if (status === 'COMPLETED') {
+            return 'Não existe uma previsão meteorológica guardada para esta atividade concluída.'
+        }
+
+        return 'Ainda não existe uma previsão meteorológica guardada para esta atividade.'
+    }
+
     return (
         <main className="app-content calendar-page">
 
@@ -553,9 +565,21 @@ function CalendarPage({ onOpenActivity }) {
                             <div className="calendar__grid">
                                 {calendarDays.map((day, index) => {
                                     if (!day) {
+                                        const emptyDate = new Date(
+                                            currentYear,
+                                            currentMonth,
+                                            index - firstDayOfMonth + 1,
+                                        )
+
+                                        const emptyDateKey = [
+                                            emptyDate.getFullYear(),
+                                            String(emptyDate.getMonth() + 1).padStart(2, '0'),
+                                            String(emptyDate.getDate()).padStart(2, '0'),
+                                        ].join('-')
+
                                         return (
                                             <div
-                                                key={`empty-${index}`}
+                                                key={`empty-${emptyDateKey}`}
                                                 className="calendar__day calendar__day--empty"
                                             />
                                         )
@@ -679,17 +703,13 @@ function CalendarPage({ onOpenActivity }) {
 
             {
                 selectedActivity && (
-                    <div
-                        className="calendar-activity-modal"
-                        role="presentation"
-                    >
-                        <section
+                    <div className="calendar-activity-modal">
+                        <dialog
                             className={[
                                 'calendar-activity-modal__content',
                                 `calendar-activity-modal__content--${selectedActivity.status.toLowerCase()}`,
                             ].join(' ')}
-                            role="dialog"
-                            aria-modal="true"
+                            open
                             aria-labelledby="calendar-activity-modal-title"
                         >
                             <button
@@ -857,11 +877,7 @@ function CalendarPage({ onOpenActivity }) {
                                         </>
                                     ) : (
                                         <p className="calendar-activity-modal__weather-empty">
-                                            {selectedActivity.status === 'CANCELLED'
-                                                ? 'A previsão meteorológica não está disponível para atividades canceladas.'
-                                                : selectedActivity.status === 'COMPLETED'
-                                                    ? 'Não existe uma previsão meteorológica guardada para esta atividade concluída.'
-                                                    : 'Ainda não existe uma previsão meteorológica guardada para esta atividade.'}
+                                            {getWeatherEmptyMessage(selectedActivity.status)}
                                         </p>
                                     )}
 
@@ -902,7 +918,7 @@ function CalendarPage({ onOpenActivity }) {
                                     Ir para atividade
                                 </button>
                             </div>
-                        </section>
+                        </dialog>
                     </div>
                 )
             }

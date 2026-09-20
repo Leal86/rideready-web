@@ -2,9 +2,9 @@ services:
   postgres:
     image: postgres:17
     environment:
-      POSTGRES_USER: rideready
-      POSTGRES_PASSWORD: rideready
-      POSTGRES_DB: rideready
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
     ports:
       - "5432:5432"
     volumes:
@@ -23,7 +23,7 @@ services:
     env_file:
       - ../rideready-api/.env
     environment:
-      DATABASE_URL: postgresql+psycopg://rideready:rideready@postgres:5432/rideready
+      DATABASE_URL: postgresql+psycopg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
     command: >
       sh -c "alembic upgrade head &&
       uvicorn app.main:app --host 0.0.0.0 --port 8000"

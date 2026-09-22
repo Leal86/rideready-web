@@ -257,13 +257,23 @@ Dessa forma, a interface realiza operações reais através dos métodos HTTP `G
 
 ## Configuração do ambiente
 
-Crie um ficheiro `.env` na raiz do frontend com base no `.env.example`:
+O repositório inclui um ficheiro `.env.example` com as variáveis necessárias. Não altere nem envie ficheiros `.env` reais para o Git.
+
+Para executar o frontend localmente, crie um ficheiro `.env` na raiz de `rideready-web` com base no `.env.example`.
+
+No ambiente completo com Docker Compose, o `.env` do frontend também fornece as variáveis utilizadas para inicializar o PostgreSQL:
 
 ```env
 VITE_API_URL=http://localhost:8000
+
+POSTGRES_USER=rideready
+POSTGRES_PASSWORD=change_me
+POSTGRES_DB=rideready
 ```
 
-A variável `VITE_API_URL` define o endereço da RideReady API utilizado pelo Axios.
+A variável `VITE_API_URL` define o endereço da RideReady API utilizado pelo frontend.
+
+As variáveis `POSTGRES_USER`, `POSTGRES_PASSWORD` e `POSTGRES_DB` são utilizadas pelo Docker Compose para configurar o PostgreSQL e a ligação da RideReady API à base de dados.
 
 ## Instalação local
 
@@ -274,11 +284,6 @@ Para executar apenas o frontend localmente:
 - Node.js;
 - npm;
 - RideReady API disponível.
-
-Para executar o ambiente completo através de containers:
-
-- Docker;
-- Docker Compose.
 
 ### 1. Instalar as dependências
 
@@ -291,12 +296,6 @@ npm ci
 ### 2. Configurar o ambiente
 
 Crie o `.env` com base no `.env.example`.
-
-Exemplo:
-
-```env
-VITE_API_URL=http://localhost:8000
-```
 
 ### 3. Iniciar o frontend
 
@@ -339,6 +338,99 @@ npm run build
 
 Esses comandos devem ser executados antes da entrega para confirmar que o frontend continua válido.
 
+## Qualidade, testes e segurança
+
+O desenvolvimento do RideReady incluiu validações automatizadas e verificações manuais para reduzir regressões e garantir que os componentes continuassem funcionais durante a evolução do MVP.
+
+### Qualidade do frontend
+
+O frontend utiliza **Oxlint** para análise estática do código JavaScript e React.
+
+A validação pode ser executada com:
+
+```powershell
+npm run lint
+```
+
+O build de produção é validado através de:
+
+```powershell
+npm run build
+```
+
+Durante a preparação da versão final do MVP, o frontend foi validado sem erros ou avisos do linter e com build de produção concluído com sucesso.
+
+### Testes da RideReady API
+
+A API possui testes automatizados implementados com **pytest**.
+
+Os testes abrangem rotas, regras de negócio, persistência e tratamento de situações de erro.
+
+A execução pode ser realizada no repositório `rideready-api` através de:
+
+```powershell
+python -m pytest
+```
+
+Também é possível verificar a cobertura:
+
+```powershell
+python -m pytest --cov=app --cov-report=term-missing
+```
+
+Na validação final do projeto, a suíte da API foi executada com **69 testes aprovados** e **100% de cobertura das instruções medidas pelo pytest-cov**.
+
+### SonarQube Cloud
+
+Os dois componentes desenvolvidos foram também analisados através do **SonarQube Cloud** como verificação complementar de qualidade e segurança do código.
+
+Foram analisados separadamente:
+
+- `rideready-web`;
+- `rideready-api`.
+
+Na validação final do MVP, ambos apresentaram **Quality Gate aprovado** e nenhuma issue ativa identificada pela análise configurada.
+
+O SonarQube Cloud foi utilizado como verificação complementar e não substitui os testes automatizados, o linter ou os testes funcionais da aplicação.
+
+### Validação funcional
+
+Além das verificações estáticas e dos testes automatizados, o ambiente completo foi validado através do Docker Compose.
+
+Entre os cenários verificados encontram-se:
+
+- inicialização do Web, API e PostgreSQL através do Docker Compose;
+- criação automática da estrutura da base de dados através das migrations do Alembic;
+- verificação do endpoint de saúde da API;
+- criação, consulta, atualização e eliminação de atividades;
+- validação de conflitos de data e hora;
+- rejeição da criação de atividades no passado;
+- comunicação com a Geoapify;
+- comunicação com a Open-Meteo;
+- pesquisa e autocomplete de localidades;
+- consulta de condições meteorológicas;
+- funcionamento do Dashboard;
+- gestão de atividades;
+- calendário;
+- execução da aplicação a partir de uma base PostgreSQL vazia;
+- instalação e execução a partir de clones limpos dos repositórios públicos.
+
+### Segurança e configuração
+
+Foram adotadas medidas para evitar que configurações sensíveis façam parte do código versionado.
+
+Os ficheiros `.env` reais não são enviados para os repositórios. Apenas `.env.example`, contendo valores de exemplo, é disponibilizado para documentar as variáveis necessárias.
+
+A chave da Geoapify é configurada exclusivamente no backend através de variável de ambiente e não é incorporada no código do frontend.
+
+As credenciais utilizadas pelo PostgreSQL no ambiente Docker são fornecidas através de variáveis de ambiente.
+
+Os containers desenvolvidos para o RideReady são configurados para executar a aplicação com utilizadores não privilegiados sempre que aplicável, reduzindo a utilização desnecessária do utilizador `root`.
+
+As dependências da API utilizadas na construção da imagem Docker são instaladas a partir do ficheiro versionado de requisitos com verificação dos hashes definidos pelo projeto.
+
+Estas medidas complementam as validações realizadas através dos testes automatizados, análise estática e SonarQube Cloud.
+
 ## Docker
 
 O frontend possui um `Dockerfile` próprio na raiz do repositório.
@@ -357,9 +449,23 @@ O container executa o build da aplicação e utiliza o servidor de preview do Vi
 
 ## Ambiente completo com Docker Compose
 
-O `compose.yaml` encontra-se na raiz deste repositório, que funciona como repositório principal do MVP.
+Esta é a forma recomendada para executar o RideReady completo, incluindo Web, API e PostgreSQL.
 
-Para executar o ambiente completo, os dois repositórios devem estar lado a lado:
+### Pré-requisitos
+
+Para executar o ambiente completo através do Docker são necessários:
+
+- Git, caso os repositórios sejam obtidos através de `git clone`;
+- Docker Desktop com Docker Compose;
+- navegador web;
+- acesso à Internet;
+- conta e chave de API da Geoapify.
+
+Não é necessário instalar Python, Node.js, npm ou PostgreSQL no sistema anfitrião para executar o ambiente completo através do Docker.
+
+### 1. Obter os repositórios
+
+Os dois repositórios devem ficar lado a lado dentro da mesma pasta:
 
 ```text
 RideReady/
@@ -367,25 +473,95 @@ RideReady/
 └── rideready-web/
 ```
 
-A RideReady API necessita de um ficheiro `.env` contendo a chave da Geoapify.
+Exemplo utilizando Git:
 
-A partir de `rideready-web`, execute:
+```powershell
+mkdir RideReady
+cd RideReady
+
+git clone https://github.com/Leal86/rideready-api.git
+git clone https://github.com/Leal86/rideready-web.git
+```
+
+### 2. Configurar o frontend e o PostgreSQL
+
+Entre no repositório do frontend:
+
+```powershell
+cd rideready-web
+```
+
+Crie o `.env` a partir do ficheiro de exemplo:
+
+```powershell
+Copy-Item .env.example .env
+```
+
+O ficheiro contém as variáveis utilizadas pelo frontend e pelo PostgreSQL executado através do Docker Compose.
+
+### 3. Configurar a RideReady API
+
+Entre no repositório da API:
+
+```powershell
+cd ..\rideready-api
+```
+
+Crie o `.env`:
+
+```powershell
+Copy-Item .env.example .env
+```
+
+Edite o ficheiro `.env` e substitua:
+
+```text
+your_geoapify_api_key_here
+```
+
+pela sua chave da Geoapify.
+
+Não envie a chave da Geoapify para o repositório Git.
+
+No ambiente Docker Compose, a ligação PostgreSQL utilizada pela API é configurada pelo próprio Compose.
+
+### 4. Iniciar o ambiente
+
+Volte para o repositório principal:
+
+```powershell
+cd ..\rideready-web
+```
+
+Execute:
 
 ```powershell
 docker compose up -d --build
 ```
 
-O Compose cria e executa:
+O Docker Compose:
 
-```text
-rideready-web
-rideready-api
-PostgreSQL
+- cria o PostgreSQL;
+- constrói a imagem da RideReady API;
+- constrói a imagem do RideReady Web;
+- aguarda o PostgreSQL ficar disponível;
+- executa automaticamente as migrations do Alembic;
+- inicia a API;
+- inicia o frontend.
+
+### 5. Verificar os containers
+
+Execute:
+
+```powershell
+docker compose ps
 ```
 
-Durante a inicialização da API, as migrations do Alembic são aplicadas automaticamente.
+Os serviços `postgres`, `api` e `web` devem estar em execução. O PostgreSQL deverá apresentar o estado `healthy`.
 
-Após a inicialização:
+### 6. Aceder à aplicação
+
+Com os serviços em execução:
 
 ```text
 Web:     http://localhost:5173
@@ -393,21 +569,29 @@ API:     http://localhost:8000
 Swagger: http://localhost:8000/docs
 ```
 
-Para verificar os containers:
+Também é possível verificar diretamente o estado da API em:
 
-```powershell
-docker compose ps
+```text
+http://localhost:8000/health
 ```
 
-Para parar o ambiente:
+### 7. Parar o ambiente
+
+Para parar e remover os containers e a rede criada pelo Compose:
 
 ```powershell
 docker compose down
 ```
 
-O volume PostgreSQL não é removido por esse comando, preservando os dados.
+O volume PostgreSQL é preservado, mantendo as atividades armazenadas.
 
-> Não utilize `docker compose down -v` se pretender preservar o volume e os dados armazenados.
+Para iniciar novamente:
+
+```powershell
+docker compose up -d
+```
+
+> Não utilize `docker compose down -v` se pretender preservar os dados armazenados no PostgreSQL.
 
 ## Persistência
 

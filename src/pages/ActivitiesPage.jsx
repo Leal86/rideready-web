@@ -37,16 +37,45 @@ function buildWeatherSnapshot(activity) {
   }
 }
 
+function getCurrentDateTimeParts(timeZone) {
+  const formatter = new Intl.DateTimeFormat('en-CA', {
+    timeZone,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hourCycle: 'h23',
+  })
+
+  return Object.fromEntries(
+    formatter
+      .formatToParts(new Date())
+      .filter((part) => part.type !== 'literal')
+      .map((part) => [part.type, part.value]),
+  )
+}
+
 function isPastPlannedActivity(activity) {
   if (activity.status !== 'PLANNED') {
     return false
   }
 
-  const scheduledDateTime = new Date(
-    `${activity.scheduled_date}T${activity.scheduled_time}`,
-  )
+  if (!activity.timezone) {
+    return false
+  }
 
-  return scheduledDateTime < new Date()
+  const current = getCurrentDateTimeParts(activity.timezone)
+
+  const currentDateTime =
+    `${current.year}-${current.month}-${current.day}` +
+    `T${current.hour}:${current.minute}:${current.second}`
+
+  const scheduledDateTime =
+    `${activity.scheduled_date}T${activity.scheduled_time}`
+
+  return scheduledDateTime <= currentDateTime
 }
 
 function handleScrollToTop() {

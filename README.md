@@ -213,6 +213,8 @@ Permite:
 
 Quando existe outra atividade exatamente na mesma data e hora, a interface informa o utilizador e permite confirmar explicitamente se pretende manter o conflito.
 
+As verificações relacionadas com o horário planeado consideram o fuso horário associado à localização da atividade, mantendo a interface alinhada com as validações temporais realizadas pela API.
+
 ### Calendário
 
 O calendário organiza visualmente as atividades por mês e por dia.
@@ -378,7 +380,9 @@ Também é possível verificar a cobertura:
 python -m pytest --cov=app --cov-report=term-missing
 ```
 
-Na validação final do projeto, a suíte da API foi executada com **69 testes aprovados** e **100% de cobertura das instruções medidas pelo pytest-cov**.
+Na validação mais recente do projeto, a suíte da API foi executada com **74 testes aprovados**.
+
+Na validação de cobertura realizada durante a preparação final do MVP, a suíte então existente atingiu **100% de cobertura das instruções medidas pelo pytest-cov**.
 
 ### SonarQube Cloud
 
